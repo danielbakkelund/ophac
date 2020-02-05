@@ -1,0 +1,10 @@
+log.txt
+xlibs
+tmp
+*.pyc
+*.pyo
+*#
+.#*
+*~
+.DS_Store
+errs.txt
