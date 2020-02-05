@@ -9,14 +9,16 @@ def _getLogger(x):
 
 class HAC:
 
-    def __init__(self, lnk, ord=1):
+    def __init__(self, lnk, ord=1, dK=1e-12):
         '''
         lnk - Linkage model; one of 'single', 'average' or 'complete'.
         ord - The norm-order to use. Default is 1.0.
+        dK  - The increment to apply for the ultrametric completion.
         '''
         self.log          = _getLogger(HAC)
         self.lnk          = lnk
         self.ord          = ord
+        self.dK           = dK
         self._setLinkageFunctionFactory()
         self.log.info('Instantiated with lnk=%s and ord=%1.3f.', lnk, ord)
 
@@ -47,8 +49,8 @@ class HAC:
             return self.acs
 
         K0 = np.max([ac.dists[-1] for ac in self.acs])
-        K  = K0 + 1     # Pick a very small increment --- due to floating point
-                        # precision, this is the best we can hope for
+        K  = K0 + self.dK # Pick a very small increment --- due to floating point
+                          # precision, this is the best we can hope for
         norm     = lambda ac : ult.ultrametric(ac, self.N, K).norm(self.ord)
         self.acs = sorted(self.acs, key=norm)
         best     = norm(self.acs[0])
