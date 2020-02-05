@@ -7,7 +7,7 @@ if test ! -d ${XLIBS}; then
     mkdir ${XLIBS}
 
     echo 'Cloning unit test framework.'
-    (cd ${XLIBS}; git clone https://Bakkelund@bitbucket.org/Bakkelund/upyt.git)
+    (cd ${XLIBS}; git clone --branch rev01 https://Bakkelund@bitbucket.org/Bakkelund/upyt.git)
 fi
 
 if test ! -d tmp; then
