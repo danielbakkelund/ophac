@@ -38,7 +38,7 @@ def loadDissimSpace(data=None, fname=None, keymap=_IdMap()):
     keymap - (optional) dict-like that maps either {'N','R','M'} or {'Q','M'} 
     to appropriate keys in "data".
 
-    Returns a pair (Q,M) where Q is a ophac.dtypes.Quivers object, and M is a
+    Returns a pair (M,Q) where Q is a ophac.dtypes.Quivers object, and M is a
     ophac.dtypes.DistMatrix object.
     '''
     import ophac.dtypes as clst
@@ -62,7 +62,7 @@ def loadDissimSpace(data=None, fname=None, keymap=_IdMap()):
 
     assert len(Q) == M.n
     
-    return (Q,M)
+    return (M,Q)
 
 def dumpClustering(acs, Q=None, N=None, fname=None):
     '''
