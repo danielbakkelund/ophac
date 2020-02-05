@@ -22,10 +22,13 @@ SUCCEEDED!!!
 --------------------------------------------------------------------------------
 
 4) Now, try runnning
-   >python demo/article_sample.py
+   >python examples/demo/json_demo.py
 
-If this seems to run as you expect, you may have a look in the file
- 
-    demo/exampleUsage.py
+This should present a window containing three partial dendrograms.
+It is the clusterings of the data in Section 6 of the article.
+The example also shows how to load data from a file (json).
 
-for an example of how to make use of the functionality in this repo.
+###############################################################################
+
+For documentation about the data model on a high level, take a look in
+the file datamodel.txt, found in the same directory as this README file.
