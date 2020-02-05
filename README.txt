@@ -12,11 +12,17 @@ This should make your prompt look something along the lines
 
 [dev:ophac] python -um upyt.discover
 --------------------------------------------------------------------------------
-No tests to run.
+Running 21 tests.
+--------------------------------------------------------------------------------
+.....................
+--------------------------------------------------------------------------------
+Ran 21 tests in 0.017 s.
+--------------------------------------------------------------------------------
+SUCCEEDED!!!
 --------------------------------------------------------------------------------
 
-4) Try runnning
-   python demo/article_sample.py
+4) Now, try runnning
+   >python demo/article_sample.py
 
 If this seems to run as you expect, you may have a look in the file
  
