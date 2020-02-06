@@ -87,7 +87,7 @@ def dumpClustering(acs, Q=None, N=None, fname=None):
     log = _getLogger(dumpClustering)
 
     if Q is None:
-        Q = dt.Quivers([[]]*N)
+        Q = dt.Quivers(n=N,relation=[])
     data = {
         'ACS':[{'joins':ac.joins,'dists':ac.dists} for ac in acs],
         'Q':Q.quivers
