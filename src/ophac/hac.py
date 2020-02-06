@@ -51,16 +51,26 @@ class HAC:
         K0 = np.max([ac.dists[-1] for ac in self.acs])
         K  = K0 + self.dK # Pick a very small increment --- due to floating point
                           # precision, this is the best we can hope for
-        norm     = lambda ac : ult.ultrametric(ac, self.N, K).norm(self.ord)
-        self.acs = sorted(self.acs, key=norm)
-        best     = norm(self.acs[0])
-        i        = 1
-        while i < len(self.acs) and norm(self.acs[i]) == best:
+        
+        U_K      = lambda ac : ult.ultrametric(ac, self.N, K)
+        acs      = []
+        ultras   = []
+        for ac in self.acs:
+            U = U_K(ac)
+            if not U in ultras:
+                ultras.append(U)
+                acs.append(ac)
+
+        norm = lambda ac : ult.ultrametric(ac, self.N, K).norm(self.ord)
+        acs  = sorted(acs, key=norm)
+        best = norm(acs[0])
+        i    = 1
+        while i < len(acs) and norm(acs[i]) == best:
             i += 1
 
-        self.log.info('Returning %d bests with norms %1.3f', i, norm(self.acs[0]))
+        self.log.info('Returning %d bests with norms %1.3f', i, norm(acs[0]))
 
-        return self.acs[:i]
+        return acs[:i]
 
     def generate(self,dissim,order=None):
         '''
