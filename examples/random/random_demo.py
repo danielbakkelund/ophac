@@ -60,7 +60,8 @@ for c in range(C):
 
             M,Q = rnd.randomOrderedDissimSpace(N[i,j],P,T[i,j])
 
-            #
+            # M - The generated dissimilarity measure (DistMatrix)
+            # Q - The generated ordered set (Quivers)
             ######################################################
 
             hc  = hac.HAC('complete')
