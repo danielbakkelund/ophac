@@ -58,7 +58,7 @@ for c in range(C):
             # T - Expected number of ties pr dissimilarity level
             #     in the generated dissimilarity measure
 
-            Q,M = rnd.randomOrderedDissimSpace(N[i,j],P,T[i,j])
+            M,Q = rnd.randomOrderedDissimSpace(N[i,j],P,T[i,j])
 
             #
             ######################################################
