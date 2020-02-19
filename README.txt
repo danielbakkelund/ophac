@@ -19,10 +19,12 @@ Dependencies:
  * numpy
  * matplotlib
 
-The code is made to run on both python 2.7+ and  python 3.x
+The library is made to run on both python 2.7+ and  python 3.x
 
-The code can be used as-is, but if you want to have a look at the examples,
-you should follow the below recipe.
+The code can be used as-is, just place the src directory in your PYTHONPATH.
+
+However, if you want to have a look at the examples, you should 
+follow the below recipe.
 
 The examples assume python 3.x.
 
@@ -33,7 +35,7 @@ The examples assume python 3.x.
 
 This should make your prompt look something along the lines
 
-[dev:ophac] python -um upyt.discover
+> python -um upyt.discover
 --------------------------------------------------------------------------------
 Running 21 tests.
 --------------------------------------------------------------------------------
@@ -63,7 +65,7 @@ The above command runs one sample for each configuration. By running
    >python -u examples/random/random_demo.py 5
 
 you can have 5 samples generated for each configuratio, but the running time
-will be fife times longer, on average.
+will be five times longer, on average.
 
 ###############################################################################
 
