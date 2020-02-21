@@ -28,9 +28,28 @@ follow the below recipe.
 
 The examples assume python 3.x.
 
-1) Run               init.sh
+1) Run 
+   >init.sh
+
+This script downloads the repository https://bitbucket.org/Bakkelund/upyt
+containing the unit test library that has been used for the development
+of ophac.
+
 2) Source the script setPyPath.sh
-3) Try running
+   >source setPyPath.sh
+
+The script sets the PYTHONPATH environment variable. The script is
+written for UX like platforms, and may work for older versions of
+Cygwin as well. The directories to add to PYTHONPATH are as follows
+(in case you have to do it manually):
+
+./src
+./test
+./xlibs/upyt/src
+
+Remember that in PYTHONPATH you must specify these as absolute paths.
+
+3) Now, try running
    >python -um upyt.discover
 
 This should make your prompt look something along the lines
