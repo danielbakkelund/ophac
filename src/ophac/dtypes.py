@@ -331,6 +331,18 @@ class DistMatrix:
                 dists.append(dissimFunc(i,j))
         return DistMatrix(dists)
 
+    def toNumpyArray(self):
+        import numpy as np
+        A = np.zeros((self.n,self.n), dtype=float)
+        for i in range(0,self.n):
+            for j in range(i+1,self.n):
+                k = self.toLinearIndex(i,j)
+                x = self.dists[k]
+                A[i,j] = x
+                A[j,i] = x
+
+        return A
+
     def _getLinkage(self,name):
         if name == 'single':
             result = lambda a,b : min(a,b)
@@ -351,6 +363,10 @@ class DistMatrix:
             else:
                 a = args[0][1]
                 b = args[0][0]
+
+            if a == b:
+                return 0.0
+
             return self.dists[self.toLinearIndex(a,b)]
         else:
             return self.dists[args[0]]
@@ -364,6 +380,11 @@ class DistMatrix:
                 a = args[0][1]
                 b = args[0][0]
             x = args[1]
+
+            if a == b:
+                assert x == 0.0
+                return self
+
             i = self.toLinearIndex(a,b)
             self.dists[i] = x
             return self
