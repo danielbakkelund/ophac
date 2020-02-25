@@ -53,7 +53,7 @@ E = [(0,1),(0,5),
 # This leaves us with maximal clique: 
 clique = [3,4,6,7]
 
-# Disimilarity is 1 if thre is an edge between
+# Disimilarity is 1 if there is an edge between
 # elements, and 2 otherwise.
 def dissim(i,j):
     if i == j:
@@ -65,27 +65,27 @@ def dissim(i,j):
     else:
         return 2.0
         
-# Dissimilarity measure
-D = hac.DistMatrix.fromDissimilarity(N,dissim)
+# Input dissimilarity measure
+D = hac.DistMatrix.fromDissimilarity(N, dissim)
 
 # Use complete linkage
-hc  = hac.HAC('complete')
+algo = hac.HAC('complete')
 
 # Call generate with only a dissimilarity measure
 # --> clustering without order relation
-acs = hc.generate(D)
+solutions = algo.generate(D)
 
 # Should only be one solution
-assert len(acs) == 1
+assert len(solutions) == 1
 
 # Compute corresponding ultrametric
-U = ult.ultrametric(acs[0], N, D.max() + 1)
+U = ult.ultrametric(solutions[0], N, D.max() + 1)
 
 # Convert to numpy array
-V   = U.toNumpyArray()
+U = U.toNumpyArray()
 
 # Boolean matrix with True whenever U == 1
-B   = V == 1.0
+B = U == 1.0
 
 # Find row with max number of ones
 row = B.sum(axis=1).argmax()
@@ -93,7 +93,7 @@ row = B.sum(axis=1).argmax()
 # Find clique in row
 found = [row]
 for j in range(row+1,N):
-    if U[row,j] == 1:
+    if B[row,j]:
         found.append(j)
 
 print('Expected clique: %s' % str(clique))
