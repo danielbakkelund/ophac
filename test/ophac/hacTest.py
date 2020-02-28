@@ -15,8 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-import upyt.unittest as ut
-import ophac.hac     as hac
+import upyt.unittest     as ut
+import ophac.hac         as hac
+import ophac.ultrametric as ult
 
 class TestNonOrderedClustering(ut.UnitTest):
 
@@ -78,3 +79,18 @@ class TestNonOrderedClustering(ut.UnitTest):
         
         expected = hac.AC(joins=[(0,2),(1,2)],dists=[1.0,1.5])
         self.assertEquals(expected, acs[0])
+
+    def testReproduceUltrametric(self):
+        uData = [1, 2, 2, 3, 3,
+                 2, 2, 3, 3,
+                 1, 3, 3,
+                 3, 3,
+                 2]
+        U = hac.DistMatrix(uData)
+
+        L = ['single', 'average', 'complete']
+        for lnk in L:
+            hc   = hac.HAC(lnk)
+            acs  = hc.generate(U)
+            ults = [ult.ultrametric(ac, U.n, U.max() + 1e-12) for ac in acs]
+            self.assertTrue(U in ults, 'Failed for %s linkage' % lnk)
