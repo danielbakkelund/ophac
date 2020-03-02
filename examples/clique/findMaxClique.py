@@ -75,14 +75,14 @@ algo = hac.HAC('complete')
 # --> clustering without order relation
 solutions = algo.generate(D)
 
-# Should only be one solution
-assert len(solutions) == 1
+# Compute corresponding ultrametrics
+ultrametrics = set([ult.ultrametric(s, N, D.max() + 1) for s in solutions])
 
-# Compute corresponding ultrametric
-U = ult.ultrametric(solutions[0], N, D.max() + 1)
+# Should only be one solution
+assert len(ultrametrics) == 1
 
 # Convert to numpy array
-U = U.toNumpyArray()
+U = ultrametrics.pop().toNumpyArray()
 
 # Boolean matrix with True whenever U == 1
 B = U == 1.0
