@@ -56,7 +56,7 @@ class HAC:
         self.acs = []
         self.N   = len(quivers)
 
-    def _pickBest(self):
+    def _pickBest(self, d0):
         import numpy as np
         self.log.info('Finding best of %d dendrograms.', len(self.acs))
 
@@ -64,21 +64,9 @@ class HAC:
             self.log.info('Returning unique solution.')
             return self.acs
 
-        K0 = np.max([ac.dists[-1] for ac in self.acs])
-        K  = K0 + self.dK # Pick a very small increment --- due to floating point
-                          # precision, this is the best we can hope for
-        
-        U_K      = lambda ac : ult.ultrametric(ac, self.N, K)
-        acs      = []
-        ultras   = []
-        for ac in self.acs:
-            U = U_K(ac)
-            if not U in ultras:
-                ultras.append(U)
-                acs.append(ac)
-
-        norm = lambda ac : ult.ultrametric(ac, self.N, K).norm(self.ord)
-        acs  = sorted(acs, key=norm)
+        K0   = 1e-12
+        norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, ac.dists[-1] + K0)).norm(self.ord)
+        acs  = sorted(self.acs, key=norm)
         best = norm(acs[0])
         i    = 1
         while i < len(acs) and norm(acs[i]) == best:
@@ -100,7 +88,7 @@ class HAC:
         self._initClustering(dissim, order)
         self._exploreChains(dissim, order, 
                             Partition(n=self.N), AgglomerativeClustering())
-        return self._pickBest()
+        return self._pickBest(dissim)
     
     
     def _exploreChains(self, dissim, order, partition, ac0):
