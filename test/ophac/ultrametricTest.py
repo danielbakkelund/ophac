@@ -58,3 +58,16 @@ class UltrametricTest(ut.UnitTest):
         self.assertEquals(U.norm(1), ultrametric.norm(ac,9,5,1), '1-norm')
         self.assertEquals(U.norm(2), ultrametric.norm(ac,9,5,2), '2-norm')
         self.assertEquals(U.norm(3), ultrametric.norm(ac,9,5,3), '3-norm')
+
+    def testInjectivity(self):
+        '''
+        Check that K0 = 1e-12 is sufficient for injectivity in the
+        range we typically work.
+        '''
+        K   = 1.0 + 1e-12
+        N   = 4
+        ac1 = clust2.AgglomerativeClustering(joins=[(1,2)], dists=[1.0])
+        ac2 = clust2.AgglomerativeClustering(joins=[(2,3),(0,1)], dists=[1.0,1.0])
+        U1  = ultrametric.ultrametric(ac1, N, K)
+        U2  = ultrametric.ultrametric(ac2, N, K)
+        self.assertTrue(U1 != U2)
