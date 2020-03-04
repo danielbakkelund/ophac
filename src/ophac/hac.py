@@ -72,7 +72,7 @@ class HAC:
         while i < len(acs) and norm(acs[i]) == best:
             i += 1
 
-        self.log.info('Returning %d bests with norms %1.3f', i, norm(acs[0]))
+        self.log.info('Returning %d bests with fitting error %1.3f', i, norm(acs[0]))
 
         return acs[:i]
 
