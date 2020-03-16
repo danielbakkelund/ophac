@@ -19,10 +19,11 @@
 Convert agglomerative clustering to ultrametric
 '''
 
-def ultrametric(ac,N,eps=1e-12):
+def ultrametric(ac, N=-1, eps=1e-12):
     '''
     ac  - The ophac.dtypes.AgglomerativeClustering object from HC
-    N   - The number of elements being clustered
+    N   - The number of elements being clustered. If ac represents a complete
+          dendrogram, N need not be specified.
     eps - The ultrametric completion threshold. Defaults to 1e-12.
     returns a ophac.dtypes.DistMatrix representing an ultrametric over the N elements.
     '''
@@ -34,7 +35,8 @@ def ultrametric(ac,N,eps=1e-12):
             raise AssertionError('Join distances not monotone:' + \
                                      ('d[%d]=%1.4f vs d[%d]=%1.4f. %s' % \
                                           (i-1,ac.dists[i-1],i,ac.dists[i],str(ac))))
-
+    if N == -1:
+        N = len(ac) + 1
 
     K = ac.dists[-1] + eps
     L = N*(N-1)//2
