@@ -76,7 +76,7 @@ algo = hac.HAC('complete')
 solutions = algo.generate(D)
 
 # Compute corresponding ultrametrics
-ultrametrics = set([ult.ultrametric(s, N, D.max() + 1) for s in solutions])
+ultrametrics = set([ult.ultrametric(s, N, 1) for s in solutions])
 
 # Should only be one solution
 assert len(ultrametrics) == 1

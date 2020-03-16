@@ -92,5 +92,5 @@ class TestNonOrderedClustering(ut.UnitTest):
         for lnk in L:
             hc   = hac.HAC(lnk)
             acs  = hc.generate(U)
-            ults = [ult.ultrametric(ac, U.n, U.max() + 1e-12) for ac in acs]
+            ults = [ult.ultrametric(ac, U.n, 1e-12) for ac in acs]
             self.assertTrue(U in ults, 'Failed for %s linkage' % lnk)

@@ -42,7 +42,7 @@ def plot(ac,N,*args,**kwargs):
     
     sch.dendrogram(Z=Z, *args, **myargs)
 
-def _toLinkageMatrix(ac,N):
+def _toLinkageMatrix(ac,N,eps=1e-12):
     '''
     Generates a linkage matrix that is suitable for plotting
     of dendrograms through scipy.cluster.hierarchy.dendrogram
@@ -90,7 +90,7 @@ def _toLinkageMatrix(ac,N):
         _updateIndices(*join,new=idx,idxMap=idxMap)
         idx += 1
 
-    return (Z,ac.dists[-1] + 1e-12g)
+    return (Z,ac.dists[-1] + eps)
 
 def _updateIndices(a,b,new,idxMap):
     idxMap[a] = new

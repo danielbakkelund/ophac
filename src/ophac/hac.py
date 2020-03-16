@@ -65,7 +65,7 @@ class HAC:
             return self.acs
 
         K0   = 1e-12
-        norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, ac.dists[-1] + K0)).norm(self.ord)
+        norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, K0)).norm(self.ord)
         acs  = sorted(self.acs, key=norm)
         best = norm(acs[0])
         i    = 1
