@@ -53,28 +53,10 @@ class HAC:
 
     def _initClustering(self, dissim, quivers):
         assert len(quivers) == dissim.n
-        self.acs = []
-        self.N   = len(quivers)
-
-    def _pickBest(self, d0):
-        import numpy as np
-        self.log.info('Finding best of %d dendrograms.', len(self.acs))
-
-        if len(self.acs) == 1:
-            self.log.info('Returning unique solution.')
-            return self.acs
-
-        K0   = 1e-12
-        norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, K0)).norm(self.ord)
-        acs  = sorted(self.acs, key=norm)
-        best = norm(acs[0])
-        i    = 1
-        while i < len(acs) and norm(acs[i]) == best:
-            i += 1
-
-        self.log.info('Returning %d bests with fitting error %1.3f', i, norm(acs[0]))
-
-        return acs[:i]
+        self.acs  = []
+        self.ults = set()
+        self.N    = len(quivers)
+        self.nEnd = 0
 
     def generate(self,dissim,order=None):
         '''
@@ -88,9 +70,11 @@ class HAC:
         self._initClustering(dissim, order)
         self._exploreChains(dissim, order, 
                             Partition(n=self.N), AgglomerativeClustering())
+
+        self.log.info('A total of %d dendrograms were considered.' % self.nEnd)
+
         return self._pickBest(dissim)
-    
-    
+        
     def _exploreChains(self, dissim, order, partition, ac0):
         '''
         dissim    - dissimilarity measure for the current partition
@@ -103,7 +87,7 @@ class HAC:
 
         if len(order) == 1:
             self.log.debug('Trivial partition reached.')
-            self.acs.append(ac0)
+            self._registerCandidate(ac0)
             return 
     
         # Find minimal dissimilarity level to merge on
@@ -143,3 +127,32 @@ class HAC:
         assert merged
 
         return
+
+
+    def _registerCandidate(self, ac):
+        self.nEnd += 1
+        U = ult.ultrametric(ac, self.N)
+        if U in self.ults:
+            return
+        else:
+            self.ults.add(U)
+            self.acs.append(ac)
+
+    def _pickBest(self, d0):
+        import numpy as np
+        self.log.info('Finding best of %d dendrograms.', len(self.acs))
+
+        if len(self.acs) == 1:
+            self.log.info('Returning unique solution.')
+            return self.acs
+
+        norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, self.dK)).norm(self.ord)
+        acs  = sorted(self.acs, key=norm)
+        best = norm(acs[0])
+        i    = 1
+        while i < len(acs) and norm(acs[i]) == best:
+            i += 1
+
+        self.log.info('Returning %d bests with fitting error %1.3f', i, norm(acs[0]))
+
+        return acs[:i]
