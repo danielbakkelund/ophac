@@ -84,6 +84,45 @@ def ultrametric(ac, N=-1, eps=1e-12):
 
     return U
 
+def treeIdentical(U1,U2):
+    '''
+    Checks whether two ultrametrics represent the same
+    hierarchical clustering in terms of partitions.
+    '''
+    Q1,_ = toPartitionChain(U1)
+    Q2,_ = toPartitionChain(U2)
+    return Q1 == Q2
+
+def toPartitionChain(U):
+    import numpy as np
+    import ophac.dtypes as dt
+    result = [dt.Partition(n=U.n)]
+    desult = [0]
+    for rho in U.spectrum(includeZero=False):
+        Q = dt.Quivers([list() for _ in range(U.n)])
+        for i in range(U.n):
+            for j in range(i+1,U.n):
+                if U[i,j] <= rho:
+                    Q[i].append(j)
+
+        Q.transitiveClosure(inPlace=True)
+        done  = np.zeros((U.n,), dtype=bool)
+        parts = []
+        for i in range(U.n):
+            if done[i]:
+                continue
+            else:
+                part = list(Q[i])
+                part.append(i)
+                parts.append(sorted(part))
+                for j in Q[i]:
+                    done[j] = True
+        
+        result.append(dt.Partition(sorted(parts)))
+        desult.append(rho)
+
+    return (result,desult)
+
 def clone(U):
     '''
     Clones an ultrametric
