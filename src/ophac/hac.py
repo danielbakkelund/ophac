@@ -71,7 +71,7 @@ class HAC:
         self._exploreChains(dissim, order, 
                             Partition(n=self.N), AgglomerativeClustering())
 
-        self.log.info('A total of %d maximal dendrograms were considered.' % self.nEnd)
+        self.log.info('A total of %d maximal dendrograms were considered.', self.nEnd)
 
         return self._pickBest(dissim)
         
@@ -137,8 +137,6 @@ class HAC:
         else:
             self.ults.add(U)
             self.acs.append(ac)
-        assert self.nEnd <= len(self.acs)
-
 
     def _pickBest(self, d0):
         import numpy as np
