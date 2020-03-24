@@ -45,7 +45,7 @@ def setsAreEqual(u0s, u1s, eps=0.1):
 T0 = []
 T1 = []
 for c in range(args.C):
-    print('---   #%3d   ---' % c)
+    print('---   #%3d   ---' % (c+1))
     M,Q = rnd.randomOrderedDissimSpace(args.N, args.p, args.t)
 
     d0, acd0 = cluster(M.dists, Q.quivers, args.L, False)
@@ -74,9 +74,9 @@ for c in range(args.C):
         print('solutions: %d' % len(u0))
 
 
+print(args)
 print('Total time w/o  partial order reduction: %1.1f s. (median: %1.3f s.)' % 
       (np.sum(T0), np.median(T0)))
-
 print('Total time with partial order reduction: %1.1f s. (median: %1.3f s.)' % 
       (np.sum(T1), np.median(T1)))
 
