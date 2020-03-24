@@ -105,7 +105,7 @@ class HAC:
 
         if chunk is None:
             self.log.debug('No further mergeable pairs --- maximal element reached')
-            self.acs.append(ac0)
+            self._registerCandidate(ac0)
             return 
 
         # Get current linkage
