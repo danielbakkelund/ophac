@@ -18,26 +18,37 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot  as plt
 import numpy              as np
+import multiprocessing    as mp
 import time
+import logging
 import sys
 
-import ophac.hac as hac
-import ophac.rnd as rnd
+import ophac.hac  as hac
+import ophac.rnd  as rnd
+import ophac.args as args
 
+args = args.args(kws={'N':list, 'P':float, 'T':list, 'C':int, 
+                      'logLevel':str, 'numProcs':int},
+                 defaults={'N':[25,75,125,200], 
+                           'T':[1,2,3,4], 
+                           'P':0.1, 'C':1, 'logLevel':'ERROR',
+                           'numProcs':4})
+args.parse()
+print(args)
+
+N = args.N
+T = args.T
+P = args.P
+C = args.C
+
+logging.basicConfig(level=getattr(logging, args.logLevel.upper()))
 rnd.seed()
-
-N = [10, 20, 30, 40] # Set sizes
-P = 0.1              # Probability for two random elements to be directly comparable
-T = [1,2,3,4]        # Expected number of ties pr level in the dissimilarity
 
 N,T = np.meshgrid(N,T)
 
-C = 1 # Number of samples for each combination
-if len(sys.argv) > 1:
-    C = int(sys.argv[1])
-    totRuns = N.shape[0]*N.shape[1]*C
-    print('Running %d samples for each combination, a total of %d runs.' % (C,totRuns))
-    print('Expected running time: %d s.' % (C*20))
+totRuns = N.shape[0]*N.shape[1]*C
+print('Running %d samples for each combination, a total of %d runs.' % (C,totRuns))
+print('Expected running time: %d s.' % (C*31))
 
 Z   = np.zeros((N.shape[0],N.shape[1],C), dtype=float)
 
@@ -46,38 +57,70 @@ numRuns  = N.shape[0]*N.shape[1]*C
 reportAt = np.linspace(0,numRuns,10, dtype=int)
 runNo    = 0
 
+def runClustering(dists, quivs, i, j, c):
+    M = hac.DistMatrix(dists)
+    Q = hac.Quivers(quivs)
+    hc = hac.HAC('complete')
+    start = time.time()
+    hc.generate(M,Q)
+    return (i,j,c, time.time() - start)
+
+def genSpace(i,j,c):
+    n = N[i,j]
+    p = P
+    t = T[i,j]
+
+    ######################################################
+    # This is where we generate random data
+    # N - Number of elements in the ordered set
+    # p - Probability of two elements in the set to be
+    #     directly comparable
+    # t - Expected number of ties pr dissimilarity level
+    #     in the generated dissimilarity measure
+
+    M,Q = rnd.randomOrderedDissimSpace(n,p,t)
+
+    print('N: %d t: %d #sp(M): %d' % 
+          (n,t,len(M.spectrum(False))))
+
+    # M - The generated dissimilarity measure (DistMatrix)
+    # Q - The generated ordered set (Quivers)
+    ######################################################
+
+    return M.dists, Q.quivers, i, j, c
+
+pool = mp.Pool(processes=args.numProcs)
+
+print('Generating spaces...')
+MQ   = []
+ress = []
 for c in range(C):
     for i in range(N.shape[0]):
         for j in range(N.shape[1]):
+            ress.append(pool.apply_async(genSpace, (i,j,c)))
+                    
+for res in ress:
+    dists,quivs,i,j,c = res.get()
+    MQ.append([i,j,c,
+               hac.DistMatrix(dists), 
+               hac.Quivers(quivs)])
 
-            ######################################################
-            # This is where we generate random data
-            # N - Number of elements in the ordered set
-            # P - Probability of two elements in the set to be
-            #     directly comparable
-            # T - Expected number of ties pr dissimilarity level
-            #     in the generated dissimilarity measure
+MQ = sorted(MQ, key=lambda x : x[3].n, reverse=True)
 
-            M,Q = rnd.randomOrderedDissimSpace(N[i,j],P,T[i,j])
+print('Clustering...')
+ress = []    
+for i,j,c,M,Q in MQ:
+    ress.append(pool.apply_async(runClustering, (M.dists, Q.quivers, i, j, c)))
 
-            # M - The generated dissimilarity measure (DistMatrix)
-            # Q - The generated ordered set (Quivers)
-            ######################################################
-
-            hc  = hac.HAC('complete')
-
-            sys.stdout.write('N=%d T=%d --> ' % (N[i,j],T[i,j]))
-            start = time.time()
-            hc.generate(M,Q)
-            duration = time.time() - start
-            Z[i,j,c] = duration
-        
-            print('%1.3f s.' % duration)
-
-            runNo += 1
-            if runNo in reportAt:
-                perRun = runNo/numRuns*100
-                print('%1.1f %% of runs completed.' % perRun)
+for res in ress:
+    i,j,c,duration = res.get()
+    sys.stdout.write('N=%d T=%d --> ' % (N[i,j],T[i,j]))
+    Z[i,j,c] = duration
+    print('%1.3f s.' % duration)
+    runNo += 1
+    if runNo in reportAt:
+        perRun = runNo/numRuns*100
+        print('%1.1f %% of runs completed.' % perRun)
 
 # Compute mean durations
 Z = np.median(Z, axis=2)
@@ -95,6 +138,7 @@ ax.text2D(0.05, 0.95,
 surf = ax.plot_wireframe(N,T,Z, cmap='rainbow')
 
 allDuration = time.time() - allStart
-print('Total duration: %1.3f s.' % allDuration)
+print('Accumulated clustering time: %1.3f s.' % Z.sum())
+print('Total running time         : %1.3f s.' % allDuration)
 
 plt.show()
