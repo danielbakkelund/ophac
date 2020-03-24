@@ -25,18 +25,23 @@ def _getLogger(x):
 
 class HAC:
 
-    def __init__(self, lnk, ord=1, dK=1e-12):
+    def __init__(self, lnk, ord=1, dK=1e-12, pred=True):
         '''
-        lnk - Linkage model; one of 'single', 'average' or 'complete'.
-        ord - The norm-order to use. Default is 1.0.
-        dK  - The increment to apply for the ultrametric completion.
+        lnk  - Linkage model; one of 'single', 'average' or 'complete'.
+        ord  - The norm-order to use. Default is 1.0.
+        dK   - The increment to apply for the ultrametric completion.
+        pred - Use partial order reduction? Default is true.
         '''
         self.log          = _getLogger(HAC)
         self.lnk          = lnk
         self.ord          = ord
         self.dK           = dK
+        self.pred         = pred
         self._setLinkageFunctionFactory()
         self.log.info('Instantiated with lnk=%s and ord=%1.3f.', lnk, ord)
+
+        if not self.pred:
+            self._hasVisited = lambda x : False
 
     def _setLinkageFunctionFactory(self):
         lnkFact = None
@@ -53,10 +58,10 @@ class HAC:
 
     def _initClustering(self, dissim, quivers):
         assert len(quivers) == dissim.n
-        self.acs  = []
-        self.ults = set()
-        self.N    = len(quivers)
-        self.nEnd = 0
+        self.acs   = []     # Maximal chains
+        self.ults  = set()  
+        self.N     = len(quivers)
+        self.nEnd  = 0
 
     def generate(self,dissim,order=None):
         '''
@@ -118,25 +123,31 @@ class HAC:
                 D2  = linker(a,b,dissim)
                 P2  = partition.merge(a,b)
                 O2  = order.merge(a,b)
-                ac2 = ac0 + AgglomerativeClustering(joins=[(a,b)], dists=[chunk.dist])
+                ac2 = ac0 + AC(joins=[(a,b)], dists=[chunk.dist])
+                merged = True
                 if len(ac2) > 1:
                     assert ac2.dists[-2] <= ac2.dists[-1]
-                self._exploreChains(D2, O2, P2, ac2)
-                merged = True
+                if not self._hasVisited(ac2):
+                    self._exploreChains(D2, O2, P2, ac2)
 
         assert merged
 
         return
 
+    def _hasVisited(self, ac):
+        '''
+        Returns true if this is an already visited
+        state that should be discarded.
+        '''
+        l0 = len(self.ults)
+        U  = ult.ultrametric(ac, self.N)
+        self.ults.add(U)
+        l1 = len(self.ults)
+        return l0 == l1
 
     def _registerCandidate(self, ac):
         self.nEnd += 1
-        U = ult.ultrametric(ac, self.N)
-        if U in self.ults:
-            return
-        else:
-            self.ults.add(U)
-            self.acs.append(ac)
+        self.acs.append(ac)
 
     def _pickBest(self, d0):
         import numpy as np
@@ -145,6 +156,17 @@ class HAC:
         if len(self.acs) == 1:
             self.log.info('Returning unique solution.')
             return self.acs
+
+        if not self.pred: # Remove duplicates
+            acs2 = []
+            for ac in self.acs:
+                U  = ult.ultrametric(ac, self.N)
+                l0 = len(self.ults)
+                self.ults.add(U)
+                l1 = len(self.ults)
+                if l0 != l1:
+                    acs2.append(ac)
+            self.acs = acs2
 
         norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, self.dK)).norm(self.ord)
         acs  = sorted(self.acs, key=norm)
