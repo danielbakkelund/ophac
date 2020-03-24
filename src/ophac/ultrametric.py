@@ -38,7 +38,9 @@ def ultrametric(ac, N=-1, eps=1e-12):
     if N == -1:
         N = len(ac) + 1
 
-    K = ac.dists[-1] + eps
+    K = eps
+    if len(ac) > 0:
+        K = ac.dists[-1] + eps
     L = N*(N-1)//2
     P = clst.Partition(n=N)
     U = clst.DistMatrix([-1]*L)
