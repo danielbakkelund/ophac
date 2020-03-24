@@ -25,23 +25,22 @@ def _getLogger(x):
 
 class HAC:
 
-    def __init__(self, lnk, ord=1, dK=1e-12, pred=True):
+    def __init__(self, lnk, ord=1, dK=1e-12, pred=True, cutoff=True):
         '''
         lnk  - Linkage model; one of 'single', 'average' or 'complete'.
         ord  - The norm-order to use. Default is 1.0.
         dK   - The increment to apply for the ultrametric completion.
         pred - Use partial order reduction? Default is true.
+        cutoff - Use fit detorieration cutoff
         '''
         self.log          = _getLogger(HAC)
         self.lnk          = lnk
         self.ord          = ord
         self.dK           = dK
         self.pred         = pred
+        self.cutoff       = cutoff
         self._setLinkageFunctionFactory()
         self.log.info('Instantiated with lnk=%s and ord=%1.3f.', lnk, ord)
-
-        if not self.pred:
-            self._hasVisited = lambda x : False
 
     def _setLinkageFunctionFactory(self):
         lnkFact = None
@@ -58,10 +57,17 @@ class HAC:
 
     def _initClustering(self, dissim, quivers):
         assert len(quivers) == dissim.n
-        self.acs   = []     # Maximal chains
-        self.ults  = set()  
-        self.N     = len(quivers)
-        self.nEnd  = 0
+
+        self.N  = len(quivers)
+        self.d0 = dissim
+
+        ac0  = AgglomerativeClustering()
+        U0   = ult.ultrametric(ac0, self.N, self.dK)
+        diff = (self.d0 - U0).norm(self.ord)
+
+        self.bestDiff = diff       # Closest ultrametric
+        self.acs      = [ac0]      # Maximal best chains
+        self.ults     = set([U0])  # Visited ultrametrics
 
     def generate(self,dissim,order=None):
         '''
@@ -73,14 +79,14 @@ class HAC:
             order = Quivers(n=dissim.n, relation=[])
 
         self._initClustering(dissim, order)
-        self._exploreChains(dissim, order, 
-                            Partition(n=self.N), AgglomerativeClustering())
 
-        self.log.info('A total of %d maximal dendrograms were considered.', self.nEnd)
+        P0   = Partition(n=self.N)
+        
+        self._exploreChains(dissim, order, P0, self.acs[-1], self.bestDiff)
 
         return self._pickBest(dissim)
         
-    def _exploreChains(self, dissim, order, partition, ac0):
+    def _exploreChains(self, dissim, order, partition, ac0, lastDiff):
         '''
         dissim    - dissimilarity measure for the current partition
         order     - Quivers object for the current partition
@@ -127,27 +133,50 @@ class HAC:
                 merged = True
                 if len(ac2) > 1:
                     assert ac2.dists[-2] <= ac2.dists[-1]
-                if not self._hasVisited(ac2):
-                    self._exploreChains(D2, O2, P2, ac2)
+                diff, better = self._checkVisit(ac2, lastDiff)
+                if better:
+                    self._exploreChains(D2, O2, P2, ac2, diff)
 
         assert merged
 
         return
 
-    def _hasVisited(self, ac):
+    def _checkVisit(self, ac, lastDiff):
         '''
-        Returns true if this is an already visited
-        state that should be discarded.
+        Returns true if this chain should be attempted extended.
         '''
-        l0 = len(self.ults)
-        U  = ult.ultrametric(ac, self.N)
-        self.ults.add(U)
-        l1 = len(self.ults)
-        return l0 == l1
+        U  = ult.ultrametric(ac, self.N, self.dK)
+        
+        if self.pred:
+            l0 = len(self.ults)
+            self.ults.add(U)
+            l1 = len(self.ults)
+            if l0 == l1:
+                # Already visited this state
+                return (None,False)
+
+        if not self.cutoff:
+            return (0,True)
+        
+        diff   = (U - self.d0).norm(self.ord)
+        better = diff <= lastDiff or diff <= self.bestDiff
+        return (diff, better)
 
     def _registerCandidate(self, ac):
-        self.nEnd += 1
-        self.acs.append(ac)
+        U    = ult.ultrametric(ac, self.N, self.dK)
+        diff = (U - self.d0).norm(self.ord)
+
+        if diff > self.bestDiff:
+            # discard candidate
+            return
+
+        if diff < self.bestDiff:
+            self.log.info('New best candidate at diff %1.3e', diff)
+            self.acs      = [ac]
+            self.bestDiff = diff
+        else:
+            # Same diff
+            self.acs.append(ac)
 
     def _pickBest(self, d0):
         import numpy as np
@@ -157,16 +186,17 @@ class HAC:
             self.log.info('Returning unique solution.')
             return self.acs
 
-        if not self.pred: # Remove duplicates
-            acs2 = []
-            for ac in self.acs:
-                U  = ult.ultrametric(ac, self.N)
-                l0 = len(self.ults)
-                self.ults.add(U)
-                l1 = len(self.ults)
-                if l0 != l1:
-                    acs2.append(ac)
-            self.acs = acs2
+        # Remove duplicate ultrametric ACs
+        acs2 = []
+        ults = set()
+        for ac in self.acs:
+            U  = ult.ultrametric(ac, self.N, self.dK)
+            l0 = len(ults)
+            ults.add(U)
+            l1 = len(ults)
+            if l0 != l1:
+                acs2.append(ac)
+        self.acs = acs2
 
         norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, self.dK)).norm(self.ord)
         acs  = sorted(self.acs, key=norm)
