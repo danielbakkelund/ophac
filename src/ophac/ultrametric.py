@@ -137,19 +137,14 @@ def extend(U0, P, rho, eps=1e-12):
     import ophac.dtypes as dt
     
     dU0 = U0.max()
-    U1  = U0.toNumpyArray()
+    U1  = clone(U0)
     for B in P:
         for i in range(len(B)):
             for j in range(i+1,len(B)):
-                if U1[i,j] == dU0:
-                    U1[i,j] = rho
+                if U1[B[i],B[j]] == dU0:
+                    U1[B[i],B[j]] = rho
 
-    dists = []
-    for i in range(U0.n):
-        for j in range(i+1,U0.n):
-            dists.append(U1[i,j])
-
-    dists = np.array(dists)
+    dists = np.array(U1.dists)
     I     = dists == dU0
     dists[I] = rho + eps
 

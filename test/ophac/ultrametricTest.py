@@ -116,15 +116,32 @@ class UltrametricTest(ut.UnitTest):
         self.assertFalse(ult.treeIdentical(dt.DistMatrix(uDists1), 
                                           dt.DistMatrix(uDists2)),
                          'Wrong when different')
+    
+    def testExtendStepWise_fig3_5_SL(self):
+        '''
+        Figure 3.5 in Jain and Dubes (1988)
+        '''
+        N     = 5
+        joins = [(1,3),(1,2),(0,2),(0,1)]
+        dists = [1.7, 1.9, 2.6, 4.2]
 
-    def testExtend(self):
-        N   = 6
-        ac0 = dt.AC(joins=[(4,5),(2,3)],dists=[1,2])
-        U0  = ult.ultrametric(ac0, N)
-        P0  = dt.Partition(data=[[0],[1],[2,3],[4,5]])
-        P   = dt.Partition(data=[[0,1],[2,3],[4,5]])
-        ac  = ac0 + dt.AC([(0,1)],[3])
-
-        expected = ult.ultrametric(ac,N)
-        actual   = ult.extend(U0, P, 3)
-        self.assertEquals(expected, actual)
+        class wrp:
+            def __init__(self,U):
+                self.U = U
+            def __eq__(self,x):
+                return (self.U-x.U).norm() < 1e-3
+            def __str__(self):
+                frm = lambda x : '%1.3f' % x
+                return str(list(map(frm,self.U.dists)))
+        
+        dK = 1.0e-2
+        ac = dt.AC()
+        U  = ult.ultrametric(ac,N,dK)
+        P  = dt.Partition(n=N)
+        for i in range(len(dists)):
+            P  = P.merge(*joins[i])
+            U  = ult.extend(U, P, dists[i], dK)
+            ac = ac + dt.AC(joins[i:i+1], dists[i:i+1])
+            eU = ult.ultrametric(ac, N, dK)
+            self.assertEquals(eU, U, #wrp(eU), wrp(U),
+                              'Failed at merge i=%d with P=%s' % (i,str(P)))
