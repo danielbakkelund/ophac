@@ -125,6 +125,39 @@ def toPartitionChain(U):
 
     return (result,desult)
 
+def extend(U0, P, rho, eps=1e-12):
+    '''
+    Extends the ultrametric by the partition P using
+    the new dendrogram diameter rho.
+    U0  - Ultrametric to be extended
+    P   - New coarsest partition
+    rho - New dendrogram diameter
+    '''
+    import numpy        as np
+    import ophac.dtypes as dt
+    
+    dU0 = U0.max()
+    U1  = U0.toNumpyArray()
+    for B in P:
+        for i in range(len(B)):
+            for j in range(i+1,len(B)):
+                if U1[i,j] == dU0:
+                    U1[i,j] = rho
+
+    dists = []
+    for i in range(U0.n):
+        for j in range(i+1,U0.n):
+            dists.append(U1[i,j])
+
+    dists = np.array(dists)
+    I     = dists == dU0
+    dists[I] = rho + eps
+
+    U1 = dt.DistMatrix(list(dists))
+    U1._basePartition = P
+    return U1
+    
+    
 def clone(U):
     '''
     Clones an ultrametric

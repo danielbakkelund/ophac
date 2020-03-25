@@ -116,3 +116,15 @@ class UltrametricTest(ut.UnitTest):
         self.assertFalse(ult.treeIdentical(dt.DistMatrix(uDists1), 
                                           dt.DistMatrix(uDists2)),
                          'Wrong when different')
+
+    def testExtend(self):
+        N   = 6
+        ac0 = dt.AC(joins=[(4,5),(2,3)],dists=[1,2])
+        U0  = ult.ultrametric(ac0, N)
+        P0  = dt.Partition(data=[[0],[1],[2,3],[4,5]])
+        P   = dt.Partition(data=[[0,1],[2,3],[4,5]])
+        ac  = ac0 + dt.AC([(0,1)],[3])
+
+        expected = ult.ultrametric(ac,N)
+        actual   = ult.extend(U0, P, 3)
+        self.assertEquals(expected, actual)
