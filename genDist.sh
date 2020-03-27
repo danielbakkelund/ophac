@@ -1,3 +1,4 @@
+#!/bin/sh
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Copyright 2020 Daniel Bakkelund
 #
@@ -15,27 +16,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-import setuptools
-
-#with open("README.md", "r") as fh:
-#    long_description = fh.read()
-
-setuptools.setup(
-    name='ophac',
-    version='0.1.0',
-    author='Daniel Bakkelund',
-    author_email='daniel.bakkelund@ifi.uio.no',
-    description='Order Preserving Hierarchical Agglomerative Clustering',
-    long_description='',
-    long_description_content_type='text/markdown',
-    url='https://bitbucket.org/Bakkelund/ophac/src/v01/',
-    packages=setuptools.find_packages(),
-    classifiers=[
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
-        'Development Status :: 3 - Alpha',
-        'Operating System :: OS Independent',
-    ],
-    python_requires='>=2.7',
-)
+echo 'Run the following commands in src:'
+echo
+echo '> python3 setup.py sdist bdist_wheel'
+echo '> python3 -m twine upload dist/*'
+echo
+echo '!! Consider installing at test first ( --repository-url https://test.pypi.org/legacy/ )'

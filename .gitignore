@@ -8,3 +8,7 @@ tmp
 *~
 .DS_Store
 errs.txt
+src/build/
+src/dist/
+src/ophac_pkg_danielbakkelund.egg-info/
+src/ophac.egg-info/
