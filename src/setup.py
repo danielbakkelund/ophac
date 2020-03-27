@@ -22,7 +22,7 @@ import setuptools
 
 setuptools.setup(
     name='ophac',
-    version='0.1.0',
+    version='0.1.1',
     author='Daniel Bakkelund',
     author_email='daniel.bakkelund@ifi.uio.no',
     description='Order Preserving Hierarchical Agglomerative Clustering',
@@ -31,11 +31,10 @@ setuptools.setup(
     url='https://bitbucket.org/Bakkelund/ophac/src/v01/',
     packages=setuptools.find_packages(),
     classifiers=[
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
         'Development Status :: 3 - Alpha',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=2.7',
+    python_requires='>=3.0',
 )
