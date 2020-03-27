@@ -16,9 +16,52 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-echo 'Run the following commands in src:'
-echo
-echo '> python3 setup.py sdist bdist_wheel'
-echo '> python3 -m twine upload dist/*'
-echo
-echo '!! Consider installing at test first ( --repository-url https://test.pypi.org/legacy/ )'
+URL='--repository-url https://test.pypi.org/legacy/'
+
+DELETE='build dist ophac.egg-info'
+
+if test ! -e 'ophac'; then
+    echo 'The script must be executed in the src folder.'
+    exit 666
+fi
+
+if test "$1" == "PROD"; then
+    echo 'Push to production PyPi?'
+    read YN
+    if test "$YN" == "y"; then
+	URL=''
+    fi
+else
+    echo 'Do you have your token ready?'
+    read YN
+    if test "$YN" != "y"; then
+	exit 1
+    fi
+fi
+
+CONTINUE=0
+
+python3 setup.py sdist bdist_wheel
+if test "$?" -ne "0"; then
+    echo 'Error encountered.'
+    CONNTINUE=1
+fi
+
+if test "$CONTINUE"; then
+    (exec python3 -m twine upload $URL dist/*)
+    if test "#?" -ne "0"; then
+	echo 'Error encountered.'
+	CONTINUE=1
+    fi
+fi
+
+echo 'Delete generated files?'
+read YN
+if test "$YN" == "y"; then
+    echo 'Deleting:'
+    for fname in $DELETE; do
+	rm -rfv $fname
+    done
+fi
+
+exit $CONTINUE
