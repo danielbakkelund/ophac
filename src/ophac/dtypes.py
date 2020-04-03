@@ -450,14 +450,10 @@ class DistMatrix:
         (d,(i,j)), where d is the dissimilarity d(i,j).
         The entries are sorted w.r.t. accending values of d.
         '''
-        entries = [None]*(self.n*(self.n-1)//2)
-        linIndex = 0
-        for i in range(self.n):
-            for j in range(i+1, self.n):
-                entries[linIndex] = (self.dists[linIndex],(i,j))
-                linIndex += 1
-
-        key = lambda a : a[0]
+        import itertools
+        pairs   = itertools.combinations(range(self.n),2)
+        entries = zip(self.dists, pairs)
+        key     = lambda a : a[0]
         return sorted(entries, key=key)
 
     def getChunkedIndexPairs(self):
@@ -473,10 +469,6 @@ class DistMatrix:
             return []
 
         class Chunk:
-            def __init__(self):
-                self.dist  = 0
-                self.pairs = []
-
             def __str__(self):
                 return 'Chunk[%1.3f,%s]' % (self.dist, str(self.pairs))
             def __repr__(self):
