@@ -69,7 +69,7 @@ def dissim(i,j):
 D = hac.DistMatrix.fromDissimilarity(N, dissim)
 
 # Use complete linkage
-algo = hac.HAC('complete')
+algo = hac.HAC('average')
 
 # Call generate with only a dissimilarity measure
 # --> clustering without order relation

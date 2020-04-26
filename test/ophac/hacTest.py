@@ -94,3 +94,22 @@ class TestNonOrderedClustering(ut.UnitTest):
             acs  = hc.generate(U)
             ults = [ult.ultrametric(ac, U.n, 1e-12) for ac in acs]
             self.assertTrue(U in ults, 'Failed for %s linkage' % lnk)
+
+    def testCompletions(self):
+        M = hac.DistMatrix([1,2,3])
+        Q = hac.Quivers([[2],[],[]])
+
+        L  = 'single'
+        k0 = 0.1
+        k1 = 0.2
+        U0 = hac.DistMatrix([1.0, 1.1, 1.1])
+        U1 = hac.DistMatrix([1.0, 1.2, 1.2])
+
+        data = ((k0,U0),(k1,U1))
+        for dK,expU in data:
+            hc  = hac.HAC(L,dK=dK)
+            acs = hc.generate(M,Q)
+            self.assertEquals(1, len(acs), 'too many results for dK=' + str(dK))
+            U   = ult.ultrametric(acs[0], 3, dK)
+            self.assertEquals(expU,U)
+        
