@@ -102,10 +102,12 @@ class TestNonOrderedClustering(ut.UnitTest):
         L  = 'single'
         k0 = 0.1
         k1 = 0.2
+        k2 = 2.0
         U0 = hac.DistMatrix([1.0, 1.1, 1.1])
         U1 = hac.DistMatrix([1.0, 1.2, 1.2])
+        U2 = hac.DistMatrix([1.0, 3.0, 3.0])
 
-        data = ((k0,U0),(k1,U1))
+        data = ((k0,U0),(k1,U1),(k2,U2))
         for dK,expU in data:
             hc  = hac.HAC(L,dK=dK)
             acs = hc.generate(M,Q)
