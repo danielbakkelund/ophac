@@ -46,7 +46,7 @@ def _T_inv(i,j,a,b):
 
 def _plusTransformation(P0,i,j):
     assert i<j
-    n  = len(P0)-1
+    n  = P0.n-1
     C  = (1-P0[i,j])
     P1 = DistMatrix([0]*(n*(n-1)//2))
     for a in range(n):
@@ -55,11 +55,10 @@ def _plusTransformation(P0,i,j):
             for x,y in inv_img:
                 P1[a,b] = P1[a,b] + P0[x,y]/C
 
-    assert np.abs(np.sum(P1.dists)-1) < 0.1
-
     return P1
                 
-                
+
+
 
 class PHAC:
 

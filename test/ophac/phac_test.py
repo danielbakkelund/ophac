@@ -1,6 +1,7 @@
 
 import upyt.unittest as ut
 import ophac.phac    as phac
+import numpy         as np
 
 class PlustTransformTest(ut.UnitTest):
 
@@ -19,9 +20,10 @@ class PlustTransformTest(ut.UnitTest):
                               0.2, 0.1,
                               0.1])
         i,j = 0,3
-        P1  = phac.plusTransformation(P0,i,j)
+        P1  = phac._plusTransformation(P0,i,j)
 
         expected = phac.DistMatrix([2/7, 3/7,
                                     2/7])
 
-        self.assertEquals(expected, P1)
+        diff = np.max(np.abs((expected - P1).dists))
+        self.assertTrue(diff < 1e-8)
