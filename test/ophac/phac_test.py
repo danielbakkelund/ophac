@@ -27,3 +27,21 @@ class PlustTransformTest(ut.UnitTest):
 
         diff = np.max(np.abs((expected - P1).dists))
         self.assertTrue(diff < 1e-8)
+
+class PHAC_Test(ut.UnitTest):
+
+    def testNoOrder(self):
+        P0 = phac.DistMatrix([0.1, 0.2, 0.3,
+                              0.2, 0.1,
+                              0.1])
+
+        hc = phac.PHAC('+')
+        acs = hc.generate(P0)
+        self.assertEquals(1, len(acs), 'Too many results')
+
+        expJoins = [(0,3),(0,2),(0,1)]
+        expDists = [3/10, 3/7, 3/3]
+
+        self.assertEquals(expJoins, acs[0].joins, 'Wrong joins')
+        self.assertAllClose(expDists, acs[0].dists, msg='Wrong join probabilities')
+        
