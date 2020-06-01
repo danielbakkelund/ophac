@@ -507,8 +507,8 @@ class DistMatrix:
     def toMatrixIndex(self,k):
         from math import sqrt,floor
         n = self.n
-        i = n - 2 - floor(sqrt(-8*k + 4*n*(n-1)-7)/2.0 - 0.5)
-        j = k + i + 1 - n*(n-1)/2 + (n-i)*((n-i)-1)/2
+        i = n - 2 - int(floor(sqrt(-8*k + 4*n*(n-1)-7)/2.0 - 0.5))
+        j = k + i + 1 - n*(n-1)//2 + (n-i)*(n-i-1)//2
         assert i >= 0 and j >= 0
         return i,j
 
