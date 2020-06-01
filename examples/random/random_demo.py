@@ -27,10 +27,10 @@ import ophac.hac  as hac
 import ophac.rnd  as rnd
 import ophac.args as args
 
-args = args.args(kws={'N':list, 'P':float, 'T':list, 'C':int, 
+args = args.args(kws={'N':list, 'P':float, 'T':list, 'C':int, 'L':str,
                       'logLevel':str, 'numProcs':int},
                  defaults={'N':[25,75,125,200], 
-                           'T':[1,2,3,4], 
+                           'T':[1,2,3,4], 'L':'complete',
                            'P':0.1, 'C':1, 'logLevel':'ERROR',
                            'numProcs':4})
 args.parse()
@@ -60,7 +60,7 @@ runNo    = 0
 def runClustering(dists, quivs, i, j, c):
     M = hac.DistMatrix(dists)
     Q = hac.Quivers(quivs)
-    hc = hac.HAC('complete')
+    hc = hac.HAC(args.L)
     start = time.time()
     hc.generate(M,Q)
     return (i,j,c, time.time() - start)
