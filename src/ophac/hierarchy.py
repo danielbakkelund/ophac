@@ -46,13 +46,13 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     import ophaq.ultrametric as ult
     U = ult.ultrametric(ac, N, K)
 
-    * To obtain the corresponding sequence of partitions
+    * To obtain the k-th partition
     import ophaq.dtypes as dt
-    partitions = dt.merge(dt.Partition(n=N), ac.joins)
+    kthPartition = dt.merge(dt.Partition(n=N), ac.joins[:k])
 
-    * To obtain the corresponding sequence of induced order relations
+    * To obtain the k-th induced order relation
     import ophac.dtypes as dt
-    inducedOrders = dt.merge(dt.Quivers(G), ac.joins)
+    kthInducedOrder = dt.merge(dt.Quivers(G), ac.joins[:k])
 
     * To plot the corresponding (partial) dendrogram
     import matplotlib.pyplot as plt
@@ -61,9 +61,8 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     dend.plot(ac, N, ax=ax)
     plt.show()
 
-    The method uses scipy.cluster.hierarchy.dendrogram for the plotting,
-    and the dend.plot(...) method passes any addition arguments on to this
-    method.
+    The  dend.plot(...) method uses scipy.cluster.hierarchy.dendrogram for 
+    the plotting, and passes any additional arguments on to that method.
     '''
     import ophac.hac as hac
     import logging
