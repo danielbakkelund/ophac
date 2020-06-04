@@ -119,3 +119,68 @@ def randomDissimilarity(N,n,d1=1,steps=[1],scale=0.0):
 
     return DistMatrix(result)
 
+def plantedPartition(Q,N,p,dEq=0.1,dDiff=1.0,s=0.01):
+    '''
+    Produces planted partitions by duplicating the ordered
+    set Q times N. Two equivalent elements are then registered
+    as equivalent with probability p by specifying their
+    dissimilarity by dEq. Otherwise, and for all non-equivalent
+    elements, they are registered with dissimilarity dDiff.
+    Finally, Gaussian noise is added to the dissimilarity measure
+    with mean 0 and variance s.
+
+    Q     - Base ordered set.
+    N     - Number of parallel datasets. 
+            Must be >= 1.
+    p     - Probability for equivalent elements to be marked so. 
+            Must be 0 <= p <= 1.
+    dEq   - Dissimilarity for elements marked as equivalent. 
+            Must be >0.
+    dDiff - Dissinilarity for all other elements. 
+            Must be >dEq.
+    s     - Variance of Gaussian noise to add. 
+            Must be >=0.
+
+    Returns M,Q2,P where 
+    M  is the produced dissimilarity measure,
+    Q' is the corresponding partial order, and
+    P  is the planted partition.
+    '''
+    import numpy as np
+    from numpy.random import random as rnd
+    from numpy.random import normal 
+    from itertools import combinations
+    import ophac.dtypes             as dt
+    
+    M       = N*len(Q) # num elts in produced poset
+    quivers = []
+    planted = [list() for _ in range(len(Q))]
+    dists   = dt.DistMatrix([dDiff]*(M*(M-1)//2))
+
+    # Concatenate all quivers into one
+    # and create the planted partition
+    for n in range(N):
+        dn = n*len(Q)
+        
+        assert len(quivers) == dn
+        for quiver in Q.quivers:
+            quivers.append([k+dn for k in quiver])
+
+        for k in range(len(Q)):
+            planted[k].append(k+dn)
+            
+    Q2 = dt.Quivers(quivers)
+    assert len(Q2) == M
+
+    # Assign dissimilarities
+    for plant in planted:
+        for i,j in combinations(plant, 2):
+            if rnd() <= p:
+                dists[i,j] = dEq
+
+    # Add some noise
+    if s > 0:
+        noise = np.abs(normal(loc=0, scale=s, size=len(dists.dists)))
+        dists = dt.DistMatrix(noise + dists.dists)
+                
+    return dists,Q2,dt.Partition(planted)
