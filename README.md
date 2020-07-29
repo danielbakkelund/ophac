@@ -11,6 +11,10 @@
  You should have received a copy of the GNU Lesser General Public License
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# Background
+The code in this project realises the theory described in <https://arxiv.org/abs/2004.12488>.
+The functionality provided is that of _**order preserving hierarchical agglomerative clustering of partially ordered sets**_.
+
 # Dependencies:
  * numpy
  * matplotlib
