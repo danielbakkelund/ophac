@@ -19,14 +19,12 @@ Dependencies:
  * numpy
  * matplotlib
 
-The library is made to run on both python 2.7+ and  python 3.x
+The library is made to run on python 3.x
 
 The code can be used as-is, just place the src directory in your PYTHONPATH.
 
 However, if you want to have a look at the examples, you should 
 follow the below recipe.
-
-The examples assume python 3.x.
 
 1) Run 
    >init.sh
