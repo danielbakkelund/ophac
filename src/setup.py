@@ -26,7 +26,7 @@ setuptools.setup(
     author='Daniel Bakkelund',
     author_email='daniel.bakkelund@ifi.uio.no',
     description='Order Preserving Hierarchical Agglomerative Clustering',
-    long_description='',
+    long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://bitbucket.org/Bakkelund/ophac/src/v02/',
     packages=setuptools.find_packages(),
