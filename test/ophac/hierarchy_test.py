@@ -78,15 +78,11 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
         acs = hierarchy.parallel_linkage(dists,L=L)
         self.assertTrue(len(acs) == 1)
 
-        joins = acs[0].joins
-        dists = hierarchy.dists(joins,dists,L)
-        ac    = dt.AC(joins,dists)
-
         expJoins = [(1,3),(1,2),(0,2),(0,1)]
         expDists = [1.7, 1.9, 2.6, 4.2]
         expAc    = dt.AC(expJoins, expDists)
 
-        self.assertEquals(expAc, ac)
+        self.assertEquals(expAc, acs[0])
 
     def testCompletion(self):
         import ophac.ultrametric as ult
@@ -98,11 +94,7 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
 
         acs = hierarchy.parallel_linkage(D,G,L,K=K)
         self.assertEquals(1, len(acs), 'Too many results.')
-
-        joins = acs[0].joins
-        dists = hierarchy.dists(joins,D,L)
-        ac    = dt.AC(joins,dists)
         
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
-        actualUltrametric   = ult.ultrametric(ac, 3, K)
+        actualUltrametric   = ult.ultrametric(acs[0], 3, K)
         self.assertEquals(expectedUltrametric, actualUltrametric)

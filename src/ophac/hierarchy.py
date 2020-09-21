@@ -138,11 +138,17 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     for pres in results:
         acs.extend([hac.AC(j,d) for j,d in pres])
 
-    result = hac._pickBest(hac.DistMatrix(mm), acs=acs, ord=p, dK=K)
+    d0     = hac.DistMatrix(mm)
+    result = hac._pickBest(d0, acs=acs, ord=p, dK=K)
     if len(result) > 1:
         log.warning('Random clustering resulted in %d equivalent results.', len(result))
 
-    return result
+    denoised = []
+    for ac in result:
+        dists = _dists(ac.joins,d0,L)
+        denoised.append(hac.AC(ac.joins,dists))
+        
+    return denoised
 
 def _p_linkage(XX):
     '''
@@ -167,12 +173,12 @@ def _p_linkage(XX):
     res = [(a.joins,a.dists) for a in acs]
     return res
 
-def dists(joins,D,L):
+def _dists(joins,D,L):
     '''
     Produces the join distances for the given joins and the dissimilarity
     for the linkage method specified.
 
-    Can be used to produce un-noised join distancs returned by parallel_linkage.
+    Is used to produce un-noised join distancs returned by parallel_linkage.
     '''
     import ophac.dtypes as dt
 
