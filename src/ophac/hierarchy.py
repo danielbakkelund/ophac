@@ -158,16 +158,19 @@ def _p_linkage(XX):
     import numpy        as np
     import ophac.hac    as hac
     mm,qq,lnk,ord,dK = XX
+
+    N = hac.DistMatrix(mm).n
     
     dd0  = np.array(sorted(set(mm)), dtype=float)
     seps = dd0[1:] - dd0[:-1]
     sep  = np.min(seps)
-    rnd  = np.random.random(np.shape(mm)) * (sep/3)
+    rnd  = np.random.random(np.shape(mm)) * (sep/(3*N))
 
-    M   = hac.DistMatrix(mm + rnd)
-    Q   = None
+    Q = None
     if qq is not None:
         Q = hac.Quivers(qq)
+
+    M   = hac.DistMatrix(mm + rnd)
     acs = linkage(D=M,G=Q,L=lnk,K=dK,p=ord)
     res = [(a.joins,a.dists) for a in acs]
     return res
