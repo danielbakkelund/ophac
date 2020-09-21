@@ -175,14 +175,17 @@ def _p_linkage(XX):
     res = [(a.joins,a.dists) for a in acs]
     return res
 
-def _dists(joins,D,L):
+def _dists(joins,D,L,precision=10):
     '''
     Produces the join distances for the given joins and the dissimilarity
     for the linkage method specified.
 
+    precision - number of decimals to round off
+
     Is used to produce un-noised join distancs returned by parallel_linkage.
     '''
     import ophac.dtypes as dt
+    import numpy        as np
 
     if not isinstance(D,dt.DistMatrix):
         D = dt.DistMatrix(D)
@@ -201,7 +204,5 @@ def _dists(joins,D,L):
 
         dists.append(d)
 
-    return dists
+    return list(np.round(dists,decimals=precision))
 
-    
-        
