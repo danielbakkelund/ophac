@@ -33,12 +33,12 @@ class HAC:
         pred - Use partial order reduction? Default is true.
         cutoff - Use fit detorieration cutoff
         '''
-        self.log          = _getLogger(HAC)
-        self.lnk          = lnk
-        self.ord          = ord
-        self.dK           = dK
-        self.pred         = pred
-        self.cutoff       = cutoff
+        self.log    = _getLogger(HAC)
+        self.lnk    = lnk
+        self.ord    = ord
+        self.dK     = dK
+        self.pred   = pred
+        self.cutoff = cutoff
         self._setLinkageFunctionFactory()
         self.log.info('Instantiated with lnk=%s and ord=%1.3f.', lnk, ord)
 
@@ -84,7 +84,7 @@ class HAC:
         
         self._exploreChains(dissim, order, P0, self.acs[-1], self.bestDiff)
 
-        return self._pickBest(dissim)
+        return _pickBest(dissim,self.acs,self.ord,self.dK)
         
     def _exploreChains(self, dissim, order, partition, ac0, lastDiff):
         '''
@@ -178,33 +178,36 @@ class HAC:
             # Same diff
             self.acs.append(ac)
 
-    def _pickBest(self, d0):
-        import numpy as np
-        self.log.info('Finding best of %d dendrograms.', len(self.acs))
+def _pickBest(d0,acs,ord,dK):
+    import numpy as np
+    log = _getLogger(_pickBest)
+    log.info('Finding best of %d dendrograms.', len(acs))
 
-        if len(self.acs) == 1:
-            self.log.info('Returning unique solution.')
-            return self.acs
+    N = d0.n
+    
+    if len(acs) == 1:
+        log.info('Returning unique solution.')
+        return acs
 
-        # Remove duplicate ultrametric ACs
-        acs2 = []
-        ults = set()
-        for ac in self.acs:
-            U  = ult.ultrametric(ac, self.N, self.dK)
-            l0 = len(ults)
-            ults.add(U)
-            l1 = len(ults)
-            if l0 != l1:
-                acs2.append(ac)
-        self.acs = acs2
+    # Remove duplicate ultrametric ACs
+    acs2 = []
+    ults = set()
+    for ac in acs:
+        U  = ult.ultrametric(ac, N, dK)
+        l0 = len(ults)
+        ults.add(U)
+        l1 = len(ults)
+        if l0 != l1:
+            acs2.append(ac)
+    acs = acs2
 
-        norm = lambda ac : (d0 - ult.ultrametric(ac, self.N, self.dK)).norm(self.ord)
-        acs  = sorted(self.acs, key=norm)
-        best = norm(acs[0])
-        i    = 1
-        while i < len(acs) and norm(acs[i]) == best:
-            i += 1
+    norm = lambda ac : (d0 - ult.ultrametric(ac, N, dK)).norm(ord)
+    acs  = sorted(acs, key=norm)
+    best = norm(acs[0])
+    i    = 1
+    while i < len(acs) and norm(acs[i]) == best:
+        i += 1
 
-        self.log.info('Returning %d bests with fitting error %1.3f', i, norm(acs[0]))
+    log.info('Returning %d bests with fitting error %1.3f', i, norm(acs[0]))
 
-        return acs[:i]
+    return acs[:i]

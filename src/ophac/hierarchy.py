@@ -15,6 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
+def _getLogger(thing):
+    import logging
+    return logging.getLogger(__name__ + '.' + thing.__name__)
+
 def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     '''
     Performs order preserving hierarchical clustering.
@@ -65,10 +69,9 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     the plotting, and passes any additional arguments on to that method.
     '''
     import ophac.hac as hac
-    import logging
     import time
     
-    log = logging.getLogger(__name__ + '.' + linkage.__name__)
+    log = _getLogger(linkage)
     M = hac.DistMatrix(D)
     log.info('Clustering %d elements.', M.n)
     Q = None
@@ -82,3 +85,115 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     duration = time.time() - start
     log.info('Produced %d equivalent clusterings in %1.3f s.', len(acs), duration)
     return acs
+
+    
+def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
+    '''
+    Produces an order preserving hierarchical clustering of (M,Q) using parallel 
+    processing with a number of processes and a number of samples to generate.
+
+    The algorithm applies a level of noise to the dissimilarity measure to ensure 
+    there are no initial tied connections, causing each run to be a polynomial 
+    time algorithm for all linkage models. The clusterings are run in parallel, 
+    and the returned resulst is the set of optimal clusterings.
+
+    The returned merge levels include the noise that is added, but a noise-less 
+    clustering can be produced from the returned AC object by merging again using 
+    the given index sequence in linear time.
+
+    n      - The number of samples to run.
+    procs  - Number of processes to run in parallel. Defaults to 4.
+
+    For the other parameters, se "linkage".
+
+    Returns a list of AC objects, one for each equivalently optimal solution.
+    In general, it is expeted that there is only one optimal solution, due to
+    the noise added to the dissimilarities, but then again...
+    '''
+    import multiprocessing as mp
+    import numpy           as np
+    import ophac.hac       as hac
+
+    log = _getLogger(parallel_linkage)
+    
+    # Convert types to serialisable ones
+    mm = D
+    if isinstance(mm,hac.DistMatrix):
+        mm = M.dists
+
+    log.info('Clustering %d elements %d times using %d processors.',
+            hac.DistMatrix(mm).n, n, procs)
+
+    qq = G
+    if isinstance(mm,hac.Quivers):
+        qq = Q.quivers
+
+    # TODO: generate and yield to avoid memory usage
+    X    = (mm,qq,L,p,K)
+    data = [X for _ in range(n)]
+    with mp.Pool(processes=procs) as pool:
+        results = pool.map(_p_linkage, data)
+
+    acs = []
+    for pres in results:
+        acs.extend([hac.AC(j,d) for j,d in pres])
+
+    result = hac._pickBest(hac.DistMatrix(mm), acs=acs, ord=p, dK=K)
+    if len(result) > 1:
+        log.warning('Random clustering resulted in %d equivalent results.', len(result))
+
+    return result
+
+def _p_linkage(XX):
+    '''
+    Parallel method called by pool.map.
+    TODO: consider [gaussian] noise about zero. The current solution
+          moves the mass center of the dissimilarity.
+    '''
+    import numpy        as np
+    import ophac.hac    as hac
+    mm,qq,lnk,ord,dK = XX
+    
+    dd0  = np.array(sorted(set(mm)), dtype=float)
+    seps = dd0[1:] - dd0[:-1]
+    sep  = np.min(seps)
+    rnd  = np.random.random(np.shape(mm)) * (sep/3)
+
+    M   = hac.DistMatrix(mm + rnd)
+    Q   = None
+    if qq is not None:
+        Q = hac.Quivers(qq)
+    acs = linkage(D=M,G=Q,L=lnk,K=dK,p=ord)
+    res = [(a.joins,a.dists) for a in acs]
+    return res
+
+def dists(joins,D,L):
+    '''
+    Produces the join distances for the given joins and the dissimilarity
+    for the linkage method specified.
+
+    Can be used to produce un-noised join distancs returned by parallel_linkage.
+    '''
+    import ophac.dtypes as dt
+
+    if not isinstance(D,dt.DistMatrix):
+        D = dt.DistMatrix(D)
+    
+    dists = []
+    lfact = dt.getLinkageFactory(L)
+    sizes = [1]*D.n
+    D1    = dt.DistMatrix(D)    
+    for i,j in joins:
+        lnk = lfact(sizes)
+        d   = D1[i,j]
+        D1  = lnk(i,j,D1)
+        
+        sizes[i] += sizes[j]
+        del sizes[j]
+
+        dists.append(d)
+
+    return dists
+
+    
+        

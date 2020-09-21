@@ -565,15 +565,16 @@ class BasicLinkage:
 
         return DistMatrix(dists=dists)
 
-
-def getLinkage(L):
+def getLinkageFactory(L):
     if L == 'single':
-        return BasicLinkage(SingleLinkage())
-    elif L == 'complete':
-        return BasicLinkage(CompleteLinkage())
-    else:
-        raise Error('Unknow linkage: "%d"' % L)
+        return lambda x : BasicLinkage(SingleLinkage())
+    if L == 'complete':
+        return lambda x : BasicLinkage(CompleteLinkage())
+    if L == 'average':
+        return lambda x : BasicLinkage(AverageLinkage(x))
 
+    raise Exception('Unknown linkage model: "%s"' % str(L))
+    
 def SingleLinkage():
     class SL:
         def __call__(self,i,j,x,M):

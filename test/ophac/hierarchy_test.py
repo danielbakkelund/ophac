@@ -20,7 +20,7 @@ import upyt.unittest   as ut
 import ophac.hierarchy as hierarchy
 import ophac.dtypes    as dt
 
-class TestNoSmoke(ut.UnitTest):
+class TestNoLinkageSmoke(ut.UnitTest):
     '''
     Smoke test of facade.
     '''
@@ -57,4 +57,52 @@ class TestNoSmoke(ut.UnitTest):
         
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
         actualUltrametric   = ult.ultrametric(acs[0], 3, K)
+        self.assertEquals(expectedUltrametric, actualUltrametric)
+
+class TestNoParallelLinkageSmoke(ut.UnitTest):
+    '''
+    Smoke test of facade.
+    '''
+
+    def test_fig3_5_SL_NoSmoke(self):
+        '''
+        Figure 3.5 in Jain and Dubes (1988)
+        '''
+        N     = 5
+        dists = [5.8, 4.2, 6.9, 2.6,
+                 6.7, 1.7, 7.2,
+                 1.9, 5.6,
+                 7.6]
+        L='single'
+
+        acs = hierarchy.parallel_linkage(dists,L=L)
+        self.assertTrue(len(acs) == 1)
+
+        joins = acs[0].joins
+        dists = hierarchy.dists(joins,dists,L)
+        ac    = dt.AC(joins,dists)
+
+        expJoins = [(1,3),(1,2),(0,2),(0,1)]
+        expDists = [1.7, 1.9, 2.6, 4.2]
+        expAc    = dt.AC(expJoins, expDists)
+
+        self.assertEquals(expAc, ac)
+
+    def testCompletion(self):
+        import ophac.ultrametric as ult
+        
+        D = [1,2,3]
+        G = [[2],[],[]]
+        L = 'single'
+        K = 2.0
+
+        acs = hierarchy.parallel_linkage(D,G,L,K=K)
+        self.assertEquals(1, len(acs), 'Too many results.')
+
+        joins = acs[0].joins
+        dists = hierarchy.dists(joins,D,L)
+        ac    = dt.AC(joins,dists)
+        
+        expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
+        actualUltrametric   = ult.ultrametric(ac, 3, K)
         self.assertEquals(expectedUltrametric, actualUltrametric)
