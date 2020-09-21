@@ -118,7 +118,7 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     # Convert types to serialisable ones
     mm = D
     if isinstance(mm,hac.DistMatrix):
-        mm = M.dists
+        mm = mm.dists
 
     log.info('Clustering %d elements %d times using %d processors.',
             hac.DistMatrix(mm).n, n, procs)
