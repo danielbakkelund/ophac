@@ -75,7 +75,7 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
                  7.6]
         L='single'
 
-        acs = hierarchy.parallel_linkage(dists,L=L)
+        acs = hierarchy.parallel_linkage(dists,L=L,n=10,procs=4)
         self.assertTrue(len(acs) == 1)
 
         expJoins = [(1,3),(1,2),(0,2),(0,1)]
