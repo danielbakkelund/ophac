@@ -33,8 +33,8 @@ def ultrametric(ac, N=-1, eps=1e-12):
     for i in range(1,len(ac)):
         if not ac.dists[i-1] <= ac.dists[i]:
             raise AssertionError('Join distances not monotone:' + \
-                                     ('d[%d]=%1.4f vs d[%d]=%1.4f. %s' % \
-                                          (i-1,ac.dists[i-1],i,ac.dists[i],str(ac))))
+                                     ('d[%d]=%1.4e vs d[%d]=%1.4e. (diff: %1.4e) %s' % \
+                                          (i-1,ac.dists[i-1],i,ac.dists[i],ac.dists[i]-ac.dists[i-1],str(ac))))
     if N == -1:
         N = len(ac) + 1
 
