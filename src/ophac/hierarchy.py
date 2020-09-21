@@ -97,10 +97,9 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     time algorithm for all linkage models. The clusterings are run in parallel, 
     and the returned resulst is the set of optimal clusterings.
 
-    The returned merge levels include the noise that is added, but a noise-less 
-    clustering can be produced from the returned AC object by merging again using 
-    the given index sequence in linear time.
-
+    For each optimal (noise perturbated) solution, a de-noised version is produced
+    by re-playing the joins on the original dissimilarity measure.
+    
     n      - The number of samples to run.
     procs  - Number of processes to run in parallel. Defaults to 4.
 
@@ -138,17 +137,17 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     for pres in results:
         acs.extend([hac.AC(j,d) for j,d in pres])
 
-    d0     = hac.DistMatrix(mm)
-    result = hac._pickBest(d0, acs=acs, ord=p, dK=K)
-    if len(result) > 1:
-        log.warning('Random clustering resulted in %d equivalent results.', len(result))
-
+    d0       = hac.DistMatrix(mm)
     denoised = []
-    for ac in result:
+    for ac in acs:
         dists = _dists(ac.joins,d0,L)
         denoised.append(hac.AC(ac.joins,dists))
+
+    result = hac._pickBest(d0, acs=denoised, ord=p, dK=K)
+    if len(result) > 1:
+        log.warning('Random clustering resulted in %d equivalent results.', len(result))
         
-    return denoised
+    return result
 
 def _p_linkage(XX):
     '''
