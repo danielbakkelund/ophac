@@ -22,7 +22,7 @@ with open("../README.md", "r") as fh:
 
 setuptools.setup(
     name='ophac',
-    version='0.2.0',
+    version='0.3.0',
     author='Daniel Bakkelund',
     author_email='daniel.bakkelund@ifi.uio.no',
     description='Order Preserving Hierarchical Agglomerative Clustering',
