@@ -280,6 +280,16 @@ class Quivers:
                 
         return zip(ins,outs)
 
+    def toAdjacencyMatrix(self):
+        import numpy as np
+        n = len(self)
+        A = np.zeros((n,n), dtype=int)
+        for i in range(n):
+            for j in self.quivers[i]:
+                A[i,j] = 1
+
+        return A
+    
     def __getitem__(self,i):
         return self.quivers[i]
 
