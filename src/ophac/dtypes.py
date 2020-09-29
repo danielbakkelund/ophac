@@ -632,8 +632,8 @@ class AgglomerativeClustering:
         assert (joins is None) == (dists is None)
         if joins:
             assert len(joins) == len(dists)
-            self.joins = joins
-            self.dists = dists
+            self.joins = list(joins)
+            self.dists = list(dists)
         else:
             self.joins = []
             self.dists = []

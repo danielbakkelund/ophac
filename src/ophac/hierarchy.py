@@ -128,15 +128,12 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
         qq = Q.quivers
 
     # TODO: generate and yield to avoid memory usage
-    X    = (mm,qq,L,p,K)
+    X    = (mm,qq,L)
     data = [X for _ in range(n)]
     with mp.Pool(processes=procs) as pool:
         results = pool.map(_p_linkage, data)
 
-    acs = []
-    for pres in results:
-        acs.extend([hac.AC(j,d) for j,d in pres])
-
+    acs      = [hac.AC(j,d) for j,d in results]
     d0       = hac.DistMatrix(mm)
     denoised = []
     for ac in acs:
@@ -155,9 +152,9 @@ def _p_linkage(XX):
     TODO: consider [gaussian] noise about zero. The current solution
           moves the mass center of the dissimilarity.
     '''
-    import numpy        as np
-    import ophac.hac    as hac
-    mm,qq,lnk,ord,dK = XX
+    import numpy            as np
+    import ophac.hac_untied as hac
+    mm,qq,lnk = XX
 
     N = hac.DistMatrix(mm).n
     
@@ -170,10 +167,10 @@ def _p_linkage(XX):
     if qq is not None:
         Q = hac.Quivers(qq)
 
-    M   = hac.DistMatrix(mm + rnd)
-    acs = linkage(D=M,G=Q,L=lnk,K=dK,p=ord)
-    res = [(a.joins,a.dists) for a in acs]
-    return res
+    M  = hac.DistMatrix(mm + rnd)
+    hc = hac.HACUntied(lnk)
+    ac = hc.generate(M,Q)
+    return (ac.joins,ac.dists)
 
 def _dists(joins,D,L,precision=30):
     '''
