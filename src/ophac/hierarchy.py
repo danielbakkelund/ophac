@@ -175,7 +175,7 @@ def _p_linkage(XX):
     res = [(a.joins,a.dists) for a in acs]
     return res
 
-def _dists(joins,D,L,precision=10):
+def _dists(joins,D,L,precision=30):
     '''
     Produces the join distances for the given joins and the dissimilarity
     for the linkage method specified.
@@ -198,11 +198,10 @@ def _dists(joins,D,L,precision=10):
         lnk = lfact(sizes)
         d   = D1[i,j]
         D1  = lnk(i,j,D1)
-        
         sizes[i] += sizes[j]
         del sizes[j]
 
         dists.append(d)
 
-    return list(np.round(dists,decimals=precision))
+    return np.round(dists, decimals=precision)
 

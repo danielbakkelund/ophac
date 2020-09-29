@@ -263,13 +263,13 @@ class Quivers:
         return [revMap.get(n,set()) for n in range(len(self))]
 
 
-    def degrees(self):
+    def degrees(self,transitive=False):
         '''
         Returns a sequence of pairs, one pair for every
         element, containing the elements' in- and out degree.
         '''
         Q = self
-        if not self.transitivelyClosed:
+        if transitive and not self.transitivelyClosed:
             Q = self.transitiveClosure(inPlace=False)
 
         outs = [len(x) for x in Q.quivers]
