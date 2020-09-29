@@ -141,7 +141,7 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     denoised = []
     for ac in acs:
         dists = _dists(ac.joins,d0,L)
-        denoised.append(hac.AC(ac.joins,dists))
+        denoised.append(hac.AC(list(ac.joins),list(dists)))
 
     result = hac._pickBest(d0, acs=denoised, ord=p, dK=K)
     if len(result) > 1:
