@@ -154,22 +154,34 @@ def _p_linkage(XX):
     '''
     import numpy            as np
     import ophac.hac_untied as hac
+    import time
+    
     mm,qq,lnk = XX
-
+    log = _getLogger(_p_linkage)
+    stt = time.time()
+    
     N = hac.DistMatrix(mm).n
     
     dd0  = np.array(sorted(set(mm)), dtype=float)
     seps = dd0[1:] - dd0[:-1]
     sep  = np.min(seps)
-    rnd  = np.random.random(np.shape(mm)) * (sep/(3*N))
+
+    srt = time.time()
+    rnd = np.random.random(np.shape(mm)) * (sep/(3*N))
+    rnt = time.time() - srt
 
     Q = None
     if qq is not None:
         Q = hac.Quivers(qq)
 
-    M  = hac.DistMatrix(mm + rnd)
-    hc = hac.HACUntied(lnk)
-    ac = hc.generate(M,Q)
+    M   = hac.DistMatrix(mm + rnd)
+    hc  = hac.HACUntied(lnk)
+    prt = time.time() - stt
+    sht = time.time()
+    ac  = hc.generate(M,Q)
+    ttm = time.time() - sht
+    log.info('Time: %1.4f s. (random generation: %1.4f s, prep. time: %1.4f s.)' % \
+             (ttm,rnt,prt))
     return (ac.joins,ac.dists)
 
 def _dists(joins,D,L,precision=30):
