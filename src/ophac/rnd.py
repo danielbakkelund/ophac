@@ -79,7 +79,8 @@ def randomDissimilarity(N,t,d1=1,steps=[1],scale=0.0):
     import numpy        as np
     import ophac.dtypes as dt
     import itertools
-    
+
+    t       = int(np.round(t))
     M       = N*(N-1)//2
     val     = float(d1)
     steps   = itertools.cycle(steps)
