@@ -30,6 +30,9 @@ if test ! -d tmp; then
     mkdir tmp
 fi
 
+echo Building C++ extensions
+(cd cpp; make install)
+
 echo 'Remember to source "setPyPath.sh" to set the python path.'
 
 exit 0
