@@ -101,7 +101,7 @@ def randomDissimilarity(N,t,d1=1,steps=[1],scale=0.0):
         if np.any(result < 0):
             raise Exception('Too much noise --> negative dissimilarities.')
 
-    dists = dt.DistMatrix(result)
+    dists = dt.DistMatrix(list(result))
     assert N == dists.n
     return dists
     
