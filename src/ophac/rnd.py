@@ -52,37 +52,63 @@ def randomOrder(N,p):
     import numpy        as np
     from numpy.random import permutation as perm
     n      = int(round(N*(N-1)//2*p))
-    q      = np.zeros((N*(N-1)//2,), dtype=int)
-    q[0:n] = 1
-    q      = perm(q)
+    q      = np.random.random(size=N*(N-1)//2)
     quivs  = [list() for _ in range(N)]
-    M      = dt.DistMatrix(list(q))
+    lindex = 0
     for i in range(N):
         for j in range(i+1,N):
-            if M[i,j] == 1:
+            if q[lindex] <= p:
                 quivs[i].append(j)
 
+            lindex += 1
+            
     return dt.Quivers(quivs)
+
+def randomDissimilarity(N,t,d1=1,steps=[1],scale=0.0):
+    '''
+    N     - Number of elements
+    t     - The expected value of number of equal values on each
+            dendrogram level following a uniform distribution.
+    d1    - The lowest value in the dissimilarity matrix.
+            Default: 1
+    steps - Array of increments to be cycled
+            Default: [1]
+    scale - Standard deviaton of normal noise to add to the distances.
+            Default: 0.0
+    '''
+    import numpy        as np
+    import ophac.dtypes as dt
+    import itertools
+    
+    M       = N*(N-1)//2
+    val     = float(d1)
+    steps   = itertools.cycle(steps)
+    result  = np.zeros((M,), dtype=float)
+    k       = 0
+    while k < M:
+        mult = np.min([M-k,t])
+        assert mult > 0
+        result[k:k+mult] = val
+        k   += mult
+        val += next(steps)
+
+    assert k == M
+    
+    result = np.random.permutation(result)
+
+    if scale > 0:
+        result += np.random.normal(0,scale,size=result.shape)
+        if np.any(result < 0):
+            raise Exception('Too much noise --> negative dissimilarities.')
+
+    dists = dt.DistMatrix(result)
+    assert N == dists.n
+    return dists
+    
     
 
-def randomOrder_old(N,p):
-    import ophac.dtypes as dt
-    from random import random as rnd
-    from numpy.random import permutation as permute
-
-    assert 0 <= p and p <= 1
-
-    perm = permute(range(N))
-    q    = [[] for _ in range(N)]
-    for i in range(N):
-        for j in range(i+1,N):
-            if rnd() <= p:
-                q[perm[i]].append(perm[j])
-
-    return dt.Quivers(quivers=q)
-
-
-def randomDissimilarity(N,n,d1=1,steps=[1],scale=0.0):
+    
+def randomDissimilarity_old(N,n,d1=1,steps=[1],scale=0.0):
     '''
     N     - Number of elements
     n     - The expected value of number of equal values on each

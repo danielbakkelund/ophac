@@ -65,7 +65,7 @@ class TestNoLinkageSmoke(ut.UnitTest):
         import ophac.hac_untied as unhac
         import ophac.rnd        as rnd
 
-        D,G = rnd.randomOrderedDissimSpace(N=50,p=0.01,t=1)
+        D,G = rnd.randomOrderedDissimSpace(N=100,p=0.01,t=1)
 
         for L in ['single', 'average', 'complete']:
             cl_hc  = hac.HAC(L)
