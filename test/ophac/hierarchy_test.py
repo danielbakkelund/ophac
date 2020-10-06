@@ -75,7 +75,7 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
                  7.6]
         L='single'
 
-        acs = hierarchy.parallel_linkage(dists,L=L,n=10,procs=4)
+        acs = hierarchy.approx_linkage(dists,L=L,n=10,procs=4)
         self.assertTrue(len(acs) == 1)
 
         expJoins = [(1,3),(1,2),(0,2),(0,1)]
@@ -92,7 +92,7 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
         L = 'single'
         K = 2.0
 
-        acs = hierarchy.parallel_linkage(D,G,L,K=K)
+        acs = hierarchy.approx_linkage(D,G,L,K=K)
         self.assertEquals(1, len(acs), 'Too many results.')
         
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])

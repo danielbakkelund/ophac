@@ -87,7 +87,7 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     return acs
 
     
-def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
+def approx_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     '''
     Produces an order preserving hierarchical clustering of (M,Q) using parallel 
     processing with a number of processes and a number of samples to generate.
@@ -113,7 +113,7 @@ def parallel_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     import numpy           as np
     import ophac.hac       as hac
 
-    log = _getLogger(parallel_linkage)
+    log = _getLogger(approx_linkage)
     
     # Convert types to serialisable ones
     mm = D
@@ -191,7 +191,7 @@ def _dists(joins,D,L,precision=30):
 
     precision - number of decimals to round off
 
-    Is used to produce un-noised join distancs returned by parallel_linkage.
+    Is used to produce un-noised join distancs returned by _p_linkage.
     '''
     import ophac.dtypes as dt
     import numpy        as np
