@@ -59,4 +59,11 @@ if test -e ${PWD}'/xlibs/upyt' ; then
 else # not exists xlibs
     echo '##################### ERROR #########################'
     echo 'You must run ./init.sh prior to sourcing this script.'
+    exit 42
 fi
+
+echo Setting C++ extension system variables
+export OPHAC_CPP_EXE=${PWD}/cpp/release/lib/ophac_untied
+export OPHAC_CPP_FILEDIR=${PWD}/'.ophac_cpp'
+
+mkdir ${OPHAC_CPP_FILEDIR}
