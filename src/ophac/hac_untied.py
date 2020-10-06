@@ -31,28 +31,25 @@ def HACUntied(lnk):
         from numpy.random import randint
         cpp_exe = os.environ[cpp_exe_ev]
         cpp_dir = os.environ[cpp_dir_ev]
-        token   = ''.join([str(x) for x in randint(9,size=20)])
-        return HACUntied_cpp(lnk,cpp_exe,cpp_dir,token)
+        return HACUntied_cpp(lnk,cpp_exe,cpp_dir)
     else:
         return HACUntied_python(lnk)
 
 class HACUntied_cpp:
 
-    def __init__(self,lnk,cpp_exe,cpp_dir,token):
+    def __init__(self,lnk,cpp_exe,cpp_dir):
         self.log     = _getLogger(HACUntied_cpp)
         self.lnk     = lnk
         self.cpp_exe = cpp_exe
         self.cpp_dir = cpp_dir
-        self.token   = token
-        self.log.info('Instantiated with L:%s exe:%s dir:%s token:%s',
-                      lnk, cpp_exe, cpp_dir, token)
-
+        self.log.info('Instantiated with L:%s exe:%s dir:%s',
+                      lnk, cpp_exe, cpp_dir)
 
     def generate(self,dissim,order=None):
         import json
         import os
         import time
-        import os.path as path
+        import os.path    as path
         import subprocess as sp
 
         if order is None:
@@ -63,17 +60,18 @@ class HACUntied_cpp:
                 'L':self.lnk,
                 'mode':'untied'}
 
-        ofname = path.join(self.cpp_dir, self.token + '_input.json')
-        ifname = path.join(self.cpp_dir, self.token + '_result.json')
-
+        token  = str(id(self))
+        ofname = path.join(self.cpp_dir, token + '_input.json')
+        ifname = path.join(self.cpp_dir, token + '_result.json')
+        
         with open(ofname, 'w') as outf:
             json.dump(data,outf,indent=3)
 
-        self.log.info('Running c++ ophac on %s', ofname)
+        self.log.info('Running c++ ophac %s --> %s', ofname, ifname)
         cpp_start = time.time()
         process   = sp.Popen([self.cpp_exe, ofname, ifname], stdout=sp.PIPE)
         stdout    = process.communicate()[0]
-        if not process.returncode == 0:
+        if process.returncode != 0:
             raise Exception('C++ ophac exited with return code %d' %
                             process.returncode)
             
@@ -81,9 +79,13 @@ class HACUntied_cpp:
 
         with open(ifname, 'r') as inf:
             result = json.load(inf)
-
+        
         dists = result['dists']
         joins = [tuple(x) for x in result['joins']]
+
+        os.remove(ofname)
+        os.remove(ifname)
+        
         return AC(dists=dists,joins=joins)
 
             

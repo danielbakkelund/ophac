@@ -79,7 +79,7 @@ class TestNoLinkageSmoke(ut.UnitTest):
 
         D,G = rnd.randomOrderedDissimSpace(N=100,p=0.01,t=1)
 
-        for L in ['single', 'average', 'complete']:
+        for L in ['single', 'complete']:
             cl_hc  = hac.HAC(L)
             cl_acs = cl_hc.generate(D,G)
             self.assertEquals(1,len(cl_acs), 'classic hac witb %s linkage failed' % L)
