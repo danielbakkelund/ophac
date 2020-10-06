@@ -135,12 +135,8 @@ def approx_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
 
     acs      = [hac.AC(j,d) for j,d in results]
     d0       = hac.DistMatrix(mm)
-    denoised = []
-    for ac in acs:
-        dists = _dists(ac.joins,d0,L)
-        denoised.append(hac.AC(list(ac.joins),list(dists)))
 
-    result = hac._pickBest(d0, acs=denoised, ord=p, dK=K)
+    result = hac._pickBest(d0, acs=acs, ord=p, dK=K)
     if len(result) > 1:
         log.warning('Random clustering resulted in %d equivalent results.', len(result))
         
@@ -182,7 +178,9 @@ def _p_linkage(XX):
     ttm = time.time() - sht
     log.info('Time: %1.4f s. (random generation: %1.4f s, prep. time: %1.4f s.)' % \
              (ttm,rnt,prt))
-    return (ac.joins,ac.dists)
+
+    denoised = list(_dists(ac.joins,mm,lnk))
+    return (ac.joins,denoised)
 
 def _dists(joins,D,L,precision=30):
     '''
