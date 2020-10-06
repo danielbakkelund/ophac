@@ -174,7 +174,7 @@ def _p_linkage(XX):
     if qq is not None:
         Q = hac.Quivers(qq)
 
-    M   = hac.DistMatrix(mm + rnd)
+    M   = hac.DistMatrix(list(mm + rnd))
     hc  = hac.HACUntied(lnk)
     prt = time.time() - stt
     sht = time.time()

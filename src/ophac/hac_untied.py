@@ -23,13 +23,78 @@ def _getLogger(x):
     import logging
     return logging.getLogger(__name__ + '.' + x.__name__)
 
-class HACUntied:
+def HACUntied(lnk):
+    import os
+    cpp_exe_ev = 'OPHAC_CPP_EXE'
+    cpp_dir_ev = 'OPHAC_CPP_FILEDIR'
+    if cpp_exe_ev in os.environ and cpp_dir_ev in os.environ:
+        from numpy.random import randint
+        cpp_exe = os.environ[cpp_exe_ev]
+        cpp_dir = os.environ[cpp_dir_ev]
+        token   = ''.join([str(x) for x in randint(9,size=20)])
+        return HACUntied_cpp(lnk,cpp_exe,cpp_dir,token)
+    else:
+        return HACUntied_python(lnk)
+
+class HACUntied_cpp:
+
+    def __init__(self,lnk,cpp_exe,cpp_dir,token):
+        self.log     = _getLogger(HACUntied_cpp)
+        self.lnk     = lnk
+        self.cpp_exe = cpp_exe
+        self.cpp_dir = cpp_dir
+        self.token   = token
+        self.log.info('Instantiated with L:%s exe:%s dir:%s token:%s',
+                      lnk, cpp_exe, cpp_dir, token)
+
+
+    def generate(self,dissim,order=None):
+        import json
+        import os
+        import time
+        import os.path as path
+        import subprocess as sp
+
+        if order is None:
+            order = Quivers(n=dissim.n,relation=[])
+
+        data = {'D':dissim.dists,
+                'Q':order.quivers,
+                'L':self.lnk,
+                'mode':'untied'}
+
+        ofname = path.join(self.cpp_dir, self.token + '_input.json')
+        ifname = path.join(self.cpp_dir, self.token + '_result.json')
+
+        with open(ofname, 'w') as outf:
+            json.dump(data,outf,indent=3)
+
+        self.log.info('Running c++ ophac on %s', ofname)
+        cpp_start = time.time()
+        process   = sp.Popen([self.cpp_exe, ofname, ifname], stdout=sp.PIPE)
+        stdout    = process.communicate()[0]
+        if not process.returncode == 0:
+            raise Exception('C++ ophac exited with return code %d' %
+                            process.returncode)
+            
+        self.log.info('C++ ophac completed in %1.3f s.', time.time() - cpp_start)
+
+        with open(ifname, 'r') as inf:
+            result = json.load(inf)
+
+        dists = result['dists']
+        joins = [tuple(x) for x in result['joins']]
+        return AC(dists=dists,joins=joins)
+
+            
+        
+class HACUntied_python:
 
     def __init__(self, lnk):
         '''
         lnk  - Linkage model; one of 'single', 'average' or 'complete'.
         '''
-        self.log    = _getLogger(HACUntied)
+        self.log    = _getLogger(HACUntied_python)
         self.lnk    = lnk
         self._setLinkageFunctionFactory()
         self.log.info('Instantiated with lnk=%s.', lnk)
@@ -102,3 +167,4 @@ class HACUntied:
             assert ac2.dists[-2] <= ac2.dists[-1]
 
         return self._exploreChains(D2, O2, P2, ac2)
+
