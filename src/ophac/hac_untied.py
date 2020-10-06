@@ -51,6 +51,7 @@ class HACUntied_cpp:
         import time
         import os.path    as path
         import subprocess as sp
+        import uuid
 
         if order is None:
             order = Quivers(n=dissim.n,relation=[])
@@ -60,7 +61,7 @@ class HACUntied_cpp:
                 'L':self.lnk,
                 'mode':'untied'}
 
-        token  = str(id(self))
+        token  = str(uuid.uuid1())
         ofname = path.join(self.cpp_dir, token + '_input.json')
         ifname = path.join(self.cpp_dir, token + '_result.json')
         
