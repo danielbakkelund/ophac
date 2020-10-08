@@ -25,14 +25,17 @@ def _getLogger(x):
 
 def HACUntied(lnk):
     import os
+    log        = _getLogger(HACUntied)
     cpp_exe_ev = 'OPHAC_CPP_EXE'
     cpp_dir_ev = 'OPHAC_CPP_FILEDIR'
     if cpp_exe_ev in os.environ and cpp_dir_ev in os.environ:
         from numpy.random import randint
+        log.info('Using C++ extension.')
         cpp_exe = os.environ[cpp_exe_ev]
         cpp_dir = os.environ[cpp_dir_ev]
         return HACUntied_cpp(lnk,cpp_exe,cpp_dir)
     else:
+        log.info('Using python implementation.')
         return HACUntied_python(lnk)
 
 class HACUntied_cpp:
