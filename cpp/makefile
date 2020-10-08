@@ -1,5 +1,5 @@
 
-STD=c++17
+STD=c++11
 
 LOCALFLAGS=
 

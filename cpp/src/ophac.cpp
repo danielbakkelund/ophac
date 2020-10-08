@@ -213,19 +213,19 @@ ophac::mergeDists(const Dists& D,const Sizes& s,
   case single:
     {
       const SL sl(n);
-      const BaseLinkage linker(sl);
+      const BaseLinkage<SL> linker(sl);
       return linker(D,a,b,n);
     }
   case average:
     {
       const AL al(s);
-      const BaseLinkage linker(al);
+      const BaseLinkage<AL> linker(al);
       return linker(D,a,b,n);
     }
   case complete:
     {
       const CL cl(n);
-      const BaseLinkage linker(cl);
+      const BaseLinkage<CL> linker(cl);
       return linker(D,a,b,n);
     }
   default:
