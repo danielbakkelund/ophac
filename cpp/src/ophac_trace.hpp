@@ -25,9 +25,12 @@
 
 #define OPHAC_DTRACE(x) {std::cout<<x<<std::endl;}
 
+#define OPHAC_ASSERT(x) {if(!(x)){std::ostringstream msg; msg<<"OPHAC ASSERT file:"<<__FILE__<<" line:"<<__LINE__<<" -- "<<(#x); throw std::logic_error(msg.str());}}
+
 #else // not DEBUG
 
 #define OPHAC_DTRACE(x)
+#define OPHAC_ASSERT(x)
 
 #endif // DEBUG
 

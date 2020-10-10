@@ -3,6 +3,10 @@ STD=c++11
 
 LOCALFLAGS=
 
+DEBUGFLAGS= # -D DEBUG
+
+OPTFLAGS = -O3 #-g -O1
+
 STDFLAG =
 ifneq ($(STD),)
 STDFLAG += -std=$(STD)
@@ -18,7 +22,7 @@ LIBFILE = $(LIBDIR)/libophacuntied.a
 EXEFILE = $(LIBDIR)/ophac_untied
 
 CC = g++
-CFLAGS = $(STDFLAG) -c -W -Wall -pedantic -O3 -I./src -I$(JSONDIR)/include $(LOCALFLAGS)
+CFLAGS = $(STDFLAG) -c -W -Wall -pedantic $(OPTFLAGS) -I./src -I$(JSONDIR)/include $(LOCALFLAGS) $(DEBUGFLAGS)
 COMPILE = $(CC) $(CFLAGS) 
 
 LIB_LNK    = ar

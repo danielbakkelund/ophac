@@ -23,6 +23,9 @@
 
 ophac::Merges
 ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
+  OPHAC_DTRACE("linkage_untied on "<<Q0.size()<<" element space with "<<L);
+  OPHAC_DTRACE("D0="<<D0);
+  OPHAC_DTRACE("Q0="<<Q0);
   Merges result;
   Dists   D = D0;
   Quivers Q = Q0;
@@ -30,13 +33,17 @@ ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
   Merge merge = findMerge(D,Q);
   while(merge != no_merge) {
     result.push_back(merge);
+    OPHAC_DTRACE("Next merge:"<<merge);
     const uint a = merge.second.first;
     const uint b = merge.second.second;
     D = mergeDists(D,S,a,b,L);
     S = mergeSizes(S,a,b);
     Q = mergeQuivers(Q,a,b);
+    OPHAC_DTRACE("--> D="<<D);
+    OPHAC_DTRACE("--> Q="<<Q);
     merge = findMerge(D,Q);
   }
+  OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
   return result;
 }
 
@@ -60,12 +67,14 @@ ophac::Sizes ophac::newSizes(const uint n) {
 
 ophac::Sizes
 ophac::mergeSizes(const Sizes& s0,const uint a,const uint b) {
+  const uint i1 = std::min(a,b);
+  const uint i2 = std::max(a,b);
   Sizes result(s0.size()-1);
-  for(uint i=0; i<b; ++i) {
+  for(uint i=0; i<i2; ++i) {
     result[i] = s0[i];
   }
-  result[a] += s0[b];
-  for(uint i=b+1; i<s0.size(); ++i) {
+  result[i1] += s0[i2];
+  for(uint i=i2+1; i<s0.size(); ++i) {
     result[i-1] = s0[i];
   }
   return result;
@@ -167,7 +176,7 @@ namespace {
 ophac::Merge
 ophac::findMerge(const Dists &D,const Quivers &Q) {
   typedef std::pair<uint,ftype>       DPair;
-  typedef std::set<DPair,::dpair_cmp> DPairVec;
+  typedef std::multiset<DPair,::dpair_cmp> DPairVec;
   DPairVec dpairs;
   for(uint i=0; i<D.size(); ++i) {
     dpairs.insert({i,D[i]});
@@ -175,7 +184,8 @@ ophac::findMerge(const Dists &D,const Quivers &Q) {
   for(const DPair &p: dpairs) {
     const Pair xy = toMatrixIdx(p.first, Q.size());
     if(canMerge(Q,xy.first,xy.second)) {
-      OPHAC_DTRACE("findMerge -- can merge "<<xy<<" with distance "<<p.second<<'.');
+      OPHAC_DTRACE("findMerge -- can merge "<<xy<<" with distance "<<p.second<<
+		   ". (Linear index:"<<toLinearIdx(xy,Q.size())<<')');
       return {p.second,xy};
     }
   }
@@ -197,7 +207,9 @@ ophac::toLinearIdx(const Pair &p, const uint n) {
   const uint N = n*(n-1)/2;          // Half matrix size
   const uint r = ((n-i)*(n-i-1))/2;  // Half matrix size including and below point
   const uint h = j-i-1;              // Number of cells to the right of the diagonal
-  return N - r + h;
+  const uint res = N - r + h;
+  OPHAC_ASSERT(0 <= res && res < ((n*(n-1))/2));
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +284,9 @@ ophac::CL::operator () (const Dists& d, const uint a, const uint b, const uint x
 
 ophac::AL::AL(const Sizes& _s)  :
   s0(_s)
-{}
+{
+  OPHAC_DTRACE("Instantiated with sizes "<<_s)
+}
 
 ophac::AL::AL(const AL& al) :
   s0(al.s0)
@@ -281,17 +295,18 @@ ophac::AL::AL(const AL& al) :
 ophac::AL::~AL()
 {}
 
-#include <iostream>
-
 ophac::ftype
 ophac::AL::operator () (const Dists& d, const uint a, const uint b, const uint x)const {
-  const ftype s1 = static_cast<ftype>(s0[a]);
-  const ftype s2 = static_cast<ftype>(s0[b]);
-  const uint i1 = toLinearIdx({std::min(a,x),std::max(a,x)},s0.size());
-  const uint i2 = toLinearIdx({std::min(b,x),std::max(b,x)},s0.size());
+  const uint  n  = s0.size();
+  const uint  i1 = toLinearIdx({std::min(a,x),std::max(a,x)},n);
+  const uint  i2 = toLinearIdx({std::min(b,x),std::max(b,x)},n);
+  const ftype s1 = static_cast<ftype>(s0[std::min(a,b)]);
+  const ftype s2 = static_cast<ftype>(s0[std::max(a,b)]);
   const ftype d1 = d[i1];
   const ftype d2 = d[i2];
-  OPHAC_DTRACE("AL-link; d1:"<<d1<<" d2:"<<d2<<" s1:"<<s1<<" s2:"<<s2);
-  return ((s1*d1)+(s2*d2))/(s1+s2);
+  const ftype rs = ((s1*d1)+(s2*d2))/(s1+s2);
+  OPHAC_DTRACE("AL-link("<<i1<<','<<i2<<"); d1:"<<d1<<" d2:"<<d2<<
+	       " s1:"<<s1<<" s2:"<<s2<<" --> "<<rs);
+  return rs;
 }
   
