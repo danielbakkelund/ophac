@@ -102,11 +102,13 @@ if __name__=='__main__':
 
                     if not ac_py.isMonotone():
                         print('PYTHON NOT MONOTONE:')
+                        print('N:%d p:%1.3f L:%s' % (n,p,L))
                         print('dists:\n',D)
                         print('quivs:\n',Q)
                     
                     if not ac_py.isMonotone():
                         print('C++ NOT MONOTONE:')
+                        print('N:%d p:%1.3f L:%s' % (n,p,L))
                         print('dists:\n',D)
                         print('quivs:\n',Q)
 
@@ -116,6 +118,7 @@ if __name__=='__main__':
 
                     if ac_cpp != ac_py:
                         print('ERROR.')
+                        print('N:%d p:%1.3f L:%s' % (n,p,L))
                         print(D)
                         print(Q)
                         report_diff(ac_cpp,ac_py)
