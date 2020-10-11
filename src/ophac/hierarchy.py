@@ -136,8 +136,8 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
     else:
         raise Exception('Unknown approximation mode: "' +  mode + '"')
 
-    seed = int(time.time())
-    data = [(mm,qq,L,seed+i) for i in range(n)]
+    seed = np.random.randint(50000, size=n)
+    data = [(mm,qq,L,int(s)) for s in seed]
     with mp.Pool(processes=procs) as pool:
         results = pool.map(approx_method, data)
 
