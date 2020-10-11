@@ -51,6 +51,7 @@ class HACUntied_cpp:
     def generate(self,dissim,order=None):
         import json
         import os
+        import sys
         import time
         import os.path    as path
         import subprocess as sp
@@ -73,14 +74,15 @@ class HACUntied_cpp:
 
         self.log.info('Running c++ ophac %s --> %s', ofname, ifname)
         cpp_start = time.time()
-        process   = sp.Popen([self.cpp_exe, ofname, ifname], stdout=sp.PIPE, stderr=sp.PIPE)
+        process   = sp.Popen([self.cpp_exe, ofname, ifname],
+                             stdout=sp.PIPE, stderr=sp.PIPE)
         std,err   = process.communicate()
         if process.returncode != 0:
             raise Exception('C++ ophac exited with return code %d' %
                             process.returncode)
 
         if len(std) > 0:
-            self.log.info('C++ output:\n%s', std)
+            self.log.warning('C++ output:\n%s', std)
         if len(err) > 0:
             self.log.error('C++ error output:\n%s', err)
         
