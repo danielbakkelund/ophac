@@ -72,7 +72,7 @@ namespace ophac {
   typedef std::vector<Chunk>    Chunks;
 
   Chunks findChunks(const Dists&);
-  ftype  randf();
+  uint   rand();
   
   Pair toMatrixIdx(const uint,const uint);
   uint toLinearIdx(const Pair&,const uint);

@@ -198,18 +198,29 @@ ophac::findMerge_untied(const Dists &D,const Quivers &Q) {
 }
 
 
+namespace {
+  struct rmerge_cmp {
+    typedef std::pair<ophac::uint,ophac::uint> T;
+    bool operator () (const T &a, const T &b) const {
+      return a.second < b.second;
+    }
+  };
+}
+
 ophac::Merge
 ophac::findMerge_approx(const Dists &D,const Quivers &Q) {
-  typedef std::pair<uint,ftype> RMerge;
+  typedef std::pair<uint,uint> RMerge;
   typedef std::vector<RMerge>   RMerges;
 
   const Chunks chunks = findChunks(D);
+  OPHAC_DTRACE("Found "<<chunks.size()<<" chunks.");
   for(const Chunk &chunk : chunks) {
+    OPHAC_DTRACE("Checking chunk of size "<<chunk.size());
     RMerges rmerges(chunk.size());
     for(uint i=0; i<chunk.size(); ++i) {
-      rmerges[i] = RMerge(chunk[i].first, randf());
+      rmerges[i] = RMerge(chunk[i].first, rand());
     }
-    std::sort(rmerges.begin(), rmerges.end(), ::dpair_cmp());
+    std::sort(rmerges.begin(), rmerges.end(), ::rmerge_cmp());
     for(const RMerge &rm : rmerges) {
       const Pair xy = toMatrixIdx(rm.first, Q.size());
       if(canMerge(Q,xy.first,xy.second)) {
@@ -230,20 +241,23 @@ ophac::findChunks(const Dists& dists) {
   std::sort(dpairs.begin(), dpairs.end(), ::dpair_cmp());
   Chunks result;
   ftype current_dist = -1;
-  for(uint i=0; i<dpairs.size(); ++i) {
-    if(dpairs[i].second != current_dist) {
-      OPHAC_ASSERT(dpairs[i].second > current_dist);
+  for(const IMerge &im : dpairs) {
+    if(im.second != current_dist) {
+      OPHAC_ASSERT(im.second > current_dist);
       result.push_back(Chunk());
+      current_dist = im.second;
     }
-    result.back().push_back(dpairs[i]);
+    result.back().push_back(im);
   }
   return result;
 }
 
 
-ophac::ftype
-ophac::randf() {
-  return static_cast<ftype>(std::rand())/static_cast<ftype>(RAND_MAX);
+ophac::uint
+ophac::rand() {
+  const uint result = static_cast<uint>(std::rand());
+  OPHAC_DTRACE("rnd:"<<result);
+  return result;
 }
 
 ophac::Pair
