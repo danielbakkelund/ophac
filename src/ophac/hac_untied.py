@@ -48,7 +48,7 @@ class HACUntied_cpp:
         self.log.info('Instantiated with L:%s exe:%s dir:%s',
                       lnk, cpp_exe, cpp_dir)
 
-    def generate(self,dissim,order=None,mode='untied'):
+    def generate(self,dissim,order=None,mode='untied',**kwargs):
         import json
         import os
         import sys
@@ -59,11 +59,17 @@ class HACUntied_cpp:
 
         if order is None:
             order = Quivers(n=dissim.n,relation=[])
-
+            
         data = {'D':dissim.dists,
                 'Q':order.quivers,
                 'L':self.lnk,
                 'mode':mode}
+
+        if mode == 'approx':
+            if not 'seed' in kwargs:
+                raise Exception('approx mode (a.k.a. rndpick) requires seed.')
+
+            data['seed'] = kwargs['seed']
 
         token  = str(uuid.uuid1())
         ofname = path.join(self.cpp_dir, token + '_input.json')

@@ -112,6 +112,7 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
     import multiprocessing as mp
     import numpy           as np
     import ophac.hac       as hac
+    import time
 
     log = _getLogger(approx_linkage)
     
@@ -134,9 +135,9 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
         approx_method = _rndpick_linkage
     else:
         raise Exception('Unknown approximation mode: "' +  mode + '"')
-        
-    X    = (mm,qq,L)
-    data = [X for _ in range(n)]
+
+    seed = int(time.time())
+    data = [(mm,qq,L,seed+i) for i in range(n)]
     with mp.Pool(processes=procs) as pool:
         results = pool.map(_untied_linkage, data)
 
@@ -154,13 +155,13 @@ def _rndpick_linkage(XX):
     import ophac.hac_untied as hac
     import time
     
-    mm,qq,lnk = XX
+    mm,qq,lnk,seed = XX
     log = _getLogger(_untied_linkage)
     stt = time.time()
     D   = dt.DistMatrix(mm)
     Q   = dt.Quivers(qq)
     hc  = hac.HACUntied(lnk)
-    ac  = hc.generate(D,Q)
+    ac  = hc.generate(D,Q,mode='approx',seed=seed)
     log.info('Time: %1.4f s.', time.time() - stt)
     return (ac.joins,ac.dists)
 
@@ -178,7 +179,7 @@ def _untied_linkage(XX):
     import ophac.hac_untied as hac
     import time
     
-    mm,qq,lnk = XX
+    mm,qq,lnk,_ = XX
     log = _getLogger(_untied_linkage)
     stt = time.time()
     
@@ -200,7 +201,7 @@ def _untied_linkage(XX):
     hc  = hac.HACUntied(lnk)
     prt = time.time() - stt
     sht = time.time()
-    ac  = hc.generate(M,Q)
+    ac  = hc.generate(M,Q,mode='untied')
     ttm = time.time() - sht
     log.info('Time: %1.4f s. (random generation: %1.4f s, prep. time: %1.4f s.)' % \
              (ttm,rnt,prt))
