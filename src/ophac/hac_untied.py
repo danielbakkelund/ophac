@@ -57,6 +57,9 @@ class HACUntied_cpp:
         import subprocess as sp
         import uuid
 
+        self.log.info('Running on %d element space with mode %s.',
+                      dissim.n, mode)
+        
         if order is None:
             order = Quivers(n=dissim.n,relation=[])
             
