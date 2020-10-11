@@ -18,9 +18,14 @@
 #include <iostream>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <cstdlib>
+#include <ctime>
 #include "ophac.hpp"
 #include "ophac_json.hpp"
 
+void seed(const unsigned int s) {
+  std::srand(s);
+}
 
 int main(const int nargs, const char** args) {
   if(nargs < 3) {
@@ -35,6 +40,13 @@ int main(const int nargs, const char** args) {
   nlohmann::json input;
   inf >> input;
   inf.close();
+
+  if(input.contains("seed")) {
+    const unsigned int s = input["seed"].get<unsigned int>();
+    seed(s);
+  } else {
+    seed(std::time(nullptr));
+  }
 
   const nlohmann::json result = ophac::json::linkage(input);
   std::ofstream out(outfname);
