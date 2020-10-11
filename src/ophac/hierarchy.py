@@ -139,7 +139,7 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
     seed = int(time.time())
     data = [(mm,qq,L,seed+i) for i in range(n)]
     with mp.Pool(processes=procs) as pool:
-        results = pool.map(_untied_linkage, data)
+        results = pool.map(approx_method, data)
 
     acs      = [hac.AC(j,d) for j,d in results]
     d0       = hac.DistMatrix(mm)
