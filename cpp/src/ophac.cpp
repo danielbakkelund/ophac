@@ -20,6 +20,8 @@
 #include <set>
 #include <cmath>
 #include <stdexcept>
+#include <algorithm>
+#include <random>
 
 ophac::Merges
 ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
@@ -30,7 +32,7 @@ ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
   Dists   D = D0;
   Quivers Q = Q0;
   Sizes   S = newSizes(Q.size());
-  Merge merge = findMerge(D,Q);
+  Merge merge = findMerge_untied(D,Q);
   while(merge != no_merge) {
     result.push_back(merge);
     OPHAC_DTRACE("Next merge:"<<merge);
@@ -41,7 +43,33 @@ ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
     Q = mergeQuivers(Q,a,b);
     OPHAC_DTRACE("--> D="<<D);
     OPHAC_DTRACE("--> Q="<<Q);
-    merge = findMerge(D,Q);
+    merge = findMerge_untied(D,Q);
+  }
+  OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
+  return result;
+}
+
+ophac::Merges
+ophac::linkage_approx(const Dists& D0,const Quivers& Q0,const Linkage L) {
+  OPHAC_DTRACE("linkage_approx on "<<Q0.size()<<" element space with "<<L);
+  OPHAC_DTRACE("D0="<<D0);
+  OPHAC_DTRACE("Q0="<<Q0);
+  Merges result;
+  Dists   D = D0;
+  Quivers Q = Q0;
+  Sizes   S = newSizes(Q.size());
+  Merge merge = findMerge_approx(D,Q);
+  while(merge != no_merge) {
+    result.push_back(merge);
+    OPHAC_DTRACE("Next merge:"<<merge);
+    const uint a = merge.second.first;
+    const uint b = merge.second.second;
+    D = mergeDists(D,S,a,b,L);
+    S = mergeSizes(S,a,b);
+    Q = mergeQuivers(Q,a,b);
+    OPHAC_DTRACE("--> D="<<D);
+    OPHAC_DTRACE("--> Q="<<Q);
+    merge = findMerge_approx(D,Q);
   }
   OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
   return result;
@@ -174,7 +202,7 @@ namespace {
 }
 
 ophac::Merge
-ophac::findMerge(const Dists &D,const Quivers &Q) {
+ophac::findMerge_untied(const Dists &D,const Quivers &Q) {
   typedef std::pair<uint,ftype>       DPair;
   typedef std::multiset<DPair,::dpair_cmp> DPairVec;
   DPairVec dpairs;
@@ -190,6 +218,55 @@ ophac::findMerge(const Dists &D,const Quivers &Q) {
     }
   }
   return {-1,no_pair};
+}
+
+
+ophac::Merge
+ophac::findMerge_approx(const Dists &D,const Quivers &Q) {
+  typedef std::pair<uint,ftype> RMerge;
+  typedef std::vector<RMerge>   RMerges;
+
+  const Chunks chunks = findChunks(D);
+  for(const Chunk &chunk : chunks) {
+    RMerges rmerges(chunk.size());
+    for(uint i=0; i<chunk.size(); ++i) {
+      rmerges[i] = RMerge(chunk[i].first, randf());
+    }
+    std::sort(rmerges.begin(), rmerges.end(), ::dpair_cmp());
+    for(const RMerge &rm : rmerges) {
+      const Pair xy = toMatrixIdx(rm.first, Q.size());
+      if(canMerge(Q,xy.first,xy.second)) {
+	const ftype dist = chunk.begin()->second;
+	return {dist,xy};
+      }
+    }
+  }
+  return ophac::no_merge;
+}
+
+ophac::Chunks
+ophac::findChunks(const Dists& dists) {
+  Chunk dpairs(dists.size());
+  for(uint i=0; i<dists.size(); ++i) {
+    dpairs[i] = IMerge(i,dists[i]);
+  }
+  std::sort(dpairs.begin(), dpairs.end(), ::dpair_cmp());
+  Chunks result;
+  ftype current_dist = -1;
+  for(uint i=0; i<dpairs.size(); ++i) {
+    if(dpairs[i].second != current_dist) {
+      OPHAC_ASSERT(dpairs[i].second > current_dist);
+      result.push_back(Chunk());
+    }
+    result.back().push_back(dpairs[i]);
+  }
+  return result;
+}
+
+
+ophac::ftype
+ophac::randf() {
+  return static_cast<ftype>(std::rand())/static_cast<ftype>(RAND_MAX);
 }
 
 ophac::Pair

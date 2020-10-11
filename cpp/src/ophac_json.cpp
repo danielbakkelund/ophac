@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////// 
 
 #include <stdexcept>
+#include <sstream>
 #include <nlohmann/json.hpp>
 
 #include "ophac_json.hpp"
@@ -40,18 +41,30 @@ nlohmann::json
 ophac::json::linkage(const nlohmann::json& input) {
   using json = nlohmann::json;
   OPHAC_DTRACE("ophac::json::linkage(...)");
-  if(input["mode"] != "untied") {
-    throw std::invalid_argument("Only untied clustering supported.");
-  }
+
   
   const Dists   D = input["D"].get<Dists>();
   const Quivers Q = input["Q"].get<Quivers>();
   const Linkage L = strToLinkage(input["L"]);
   OPHAC_DTRACE("ophac::json::linkage - deserialised; n:"<<Q.size()<<" L:"<<L<<".");
 
-  const Merges merges = linkage_untied(D,Q,L);
-  OPHAC_DTRACE("ophac::json::linkage - Linkage completed #merges:"<<merges.size());
+  Merges merges;
   
+  if(input["mode"] == "untied") {
+    merges = linkage_untied(D,Q,L);
+    OPHAC_DTRACE("ophac::json::linkage - Untied linkage completed; #merges:"<<
+		 merges.size());
+  } else
+    if(input["mode"] == "approx") {
+      merges = linkage_approx(D,Q,L);
+      OPHAC_DTRACE("ophac::json::linkage - Approximate linkage completed; #merges:"<<
+		   merges.size());
+  } else {
+    std::ostringstream msg;
+    msg<<"Unsupported mode: '"<<input["mode"]<<',';
+    throw std::invalid_argument(msg.str());
+  }
+
   Dists    dists;
   Relation pairs;
   for(const Merge &m : merges) {

@@ -21,6 +21,7 @@
 #include <vector>
 #include <set>
 #include <ostream>
+#include <ophac_trace.hpp>
 
 namespace ophac {
 
@@ -46,6 +47,10 @@ namespace ophac {
   const Merge no_merge {-1,no_pair};
 
   Merges linkage_untied(const Dists&,const Quivers&,const Linkage);
+  Merges linkage_approx(const Dists&,const Quivers&,const Linkage);
+
+  template<class MergeFinder>
+  Merges linkage(const Dists&,const Quivers&,const Linkage, const MergeFinder);
   
   Sizes newSizes(const uint);
   Sizes mergeSizes(const Sizes&,const uint,const uint);
@@ -57,8 +62,18 @@ namespace ophac {
 
   Dists mergeDists(const Dists&,const Sizes&,const uint,const uint,const Linkage);
 
-  Merge findMerge(const Dists&,const Quivers&);
+  
+  Merge findMerge_untied(const Dists&,const Quivers&);
+  Merge findMerge_approx(const Dists&,const Quivers&);
 
+
+  typedef std::pair<uint,ftype> IMerge;
+  typedef std::vector<IMerge>   Chunk;
+  typedef std::vector<Chunk>    Chunks;
+
+  Chunks findChunks(const Dists&);
+  ftype  randf();
+  
   Pair toMatrixIdx(const uint,const uint);
   uint toLinearIdx(const Pair&,const uint);
   
@@ -171,6 +186,34 @@ template<class S,class T>
 std::ostream&
 ophac::operator << (std::ostream& out,const std::pair<S,T>& q) {
   return out<<'{'<<q.first<<','<<q.second<<'}';
+}
+
+template<class MergeFinder>
+ophac::Merges
+ophac::linkage(const Dists& D0,const Quivers& Q0,
+	       const Linkage L, const MergeFinder findMerge) {
+  OPHAC_DTRACE("linkage_approx on "<<Q0.size()<<" element space with "<<L);
+  OPHAC_DTRACE("D0="<<D0);
+  OPHAC_DTRACE("Q0="<<Q0);
+  Merges result;
+  Dists   D = D0;
+  Quivers Q = Q0;
+  Sizes   S = newSizes(Q.size());
+  Merge merge = findMerge(D,Q);
+  while(merge != no_merge) {
+    result.push_back(merge);
+    OPHAC_DTRACE("Next merge:"<<merge);
+    const uint a = merge.second.first;
+    const uint b = merge.second.second;
+    D = mergeDists(D,S,a,b,L);
+    S = mergeSizes(S,a,b);
+    Q = mergeQuivers(Q,a,b);
+    OPHAC_DTRACE("--> D="<<D);
+    OPHAC_DTRACE("--> Q="<<Q);
+    merge = findMerge(D,Q);
+  }
+  OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
+  return result;
 }
 
 #endif // OPHAC_HPP
