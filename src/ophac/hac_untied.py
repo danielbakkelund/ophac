@@ -48,7 +48,7 @@ class HACUntied_cpp:
         self.log.info('Instantiated with L:%s exe:%s dir:%s',
                       lnk, cpp_exe, cpp_dir)
 
-    def generate(self,dissim,order=None):
+    def generate(self,dissim,order=None,mode='untied'):
         import json
         import os
         import sys
@@ -63,7 +63,7 @@ class HACUntied_cpp:
         data = {'D':dissim.dists,
                 'Q':order.quivers,
                 'L':self.lnk,
-                'mode':'untied'}
+                'mode':mode}
 
         token  = str(uuid.uuid1())
         ofname = path.join(self.cpp_dir, token + '_input.json')
@@ -125,12 +125,15 @@ class HACUntied_python:
 
         self._getLinkageFunction = lnkFact
 
-    def generate(self,dissim,order=None):
+    def generate(self,dissim,order=None,mode='untied'):
         '''
         dissim - Dissimilarity measure of type ophac.dtypes.DistMatrix 
         order  - Order relation of type ophac.dtypes.Quivers, 
                  or None for non-ordered clustering.
         '''
+        if mode != 'untied':
+            raise Exception('Only untied mode is available in python.')
+        
         if order is None:
             order = Quivers(n=dissim.n, relation=[])
 

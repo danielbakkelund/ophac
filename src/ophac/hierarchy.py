@@ -149,6 +149,20 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
         
     return result
 
+def _rndpick_linkage(XX):
+    import ophac.dtypes     as dt
+    import ophac.hac_untied as hac
+    
+    mm,qq,lnk = XX
+    log = _getLogger(_untied_linkage)
+    stt = time.time()
+    D   = dt.DistMatrix(mm)
+    Q   = dt.Quivers(qq)
+    hc  = hac.HACUntied(lnk)
+    ac  = hc.generate(D,Q)
+    log.info('Time: %1.4f s.', time.time() - stt)
+    return (ac.joins,ac.dists)
+
 def _p_linkage(XX):
     _getLogger(_p_linkage).warning('Deprecated. use ophac.hierarchy._untied_linkage')
     return _untied_linkage(XX)
@@ -164,7 +178,7 @@ def _untied_linkage(XX):
     import time
     
     mm,qq,lnk = XX
-    log = _getLogger(_p_linkage)
+    log = _getLogger(_untied_linkage)
     stt = time.time()
     
     N = hac.DistMatrix(mm).n
