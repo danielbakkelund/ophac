@@ -36,28 +36,6 @@ ophac::Merges
 ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
   const UntiedMergeFinder uf;
   return linkage<UntiedMergeFinder>(D0,Q0,L,uf);
-  /*  OPHAC_DTRACE("linkage_untied on "<<Q0.size()<<" element space with "<<L);
-  OPHAC_DTRACE("D0="<<D0);
-  OPHAC_DTRACE("Q0="<<Q0);
-  Merges result;
-  Dists   D = D0;
-  Quivers Q = Q0;
-  Sizes   S = newSizes(Q.size());
-  Merge merge = findMerge_untied(D,Q);
-  while(merge != no_merge) {
-    result.push_back(merge);
-    OPHAC_DTRACE("Next merge:"<<merge);
-    const uint a = merge.second.first;
-    const uint b = merge.second.second;
-    D = mergeDists(D,S,a,b,L);
-    S = mergeSizes(S,a,b);
-    Q = mergeQuivers(Q,a,b);
-    OPHAC_DTRACE("--> D="<<D);
-    OPHAC_DTRACE("--> Q="<<Q);
-    merge = findMerge_untied(D,Q);
-  }
-  OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
-  return result; */
 }
 
 namespace {
