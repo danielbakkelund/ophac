@@ -192,7 +192,7 @@ template<class MergeFinder>
 ophac::Merges
 ophac::linkage(const Dists& D0,const Quivers& Q0,
 	       const Linkage L, const MergeFinder findMerge) {
-  OPHAC_DTRACE("linkage_approx on "<<Q0.size()<<" element space with "<<L);
+  OPHAC_DTRACE("linkage<...> on "<<Q0.size()<<" element space with "<<L);
   OPHAC_DTRACE("D0="<<D0);
   OPHAC_DTRACE("Q0="<<Q0);
   Merges result;
@@ -212,7 +212,7 @@ ophac::linkage(const Dists& D0,const Quivers& Q0,
     OPHAC_DTRACE("--> Q="<<Q);
     merge = findMerge(D,Q);
   }
-  OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
+  OPHAC_DTRACE("linkage<...> completed with "<<result.size()<<" merges: "<<result);
   return result;
 }
 

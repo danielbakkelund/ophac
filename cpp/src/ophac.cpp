@@ -23,9 +23,20 @@
 #include <algorithm>
 #include <random>
 
+
+namespace {
+  struct UntiedMergeFinder {
+    ophac::Merge operator () (const ophac::Dists& D0,const ophac::Quivers& Q0) const {
+      return ophac::findMerge_untied(D0,Q0);
+    }
+  };
+}
+
 ophac::Merges
 ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
-  OPHAC_DTRACE("linkage_untied on "<<Q0.size()<<" element space with "<<L);
+  const UntiedMergeFinder uf;
+  return linkage<UntiedMergeFinder>(D0,Q0,L,uf);
+  /*  OPHAC_DTRACE("linkage_untied on "<<Q0.size()<<" element space with "<<L);
   OPHAC_DTRACE("D0="<<D0);
   OPHAC_DTRACE("Q0="<<Q0);
   Merges result;
@@ -46,33 +57,21 @@ ophac::linkage_untied(const Dists& D0,const Quivers& Q0,const Linkage L) {
     merge = findMerge_untied(D,Q);
   }
   OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
-  return result;
+  return result; */
+}
+
+namespace {
+  struct ApproxMergeFinder {
+    ophac::Merge operator () (const ophac::Dists& D0,const ophac::Quivers& Q0) const {
+      return ophac::findMerge_approx(D0,Q0);
+    }
+  };
 }
 
 ophac::Merges
 ophac::linkage_approx(const Dists& D0,const Quivers& Q0,const Linkage L) {
-  OPHAC_DTRACE("linkage_approx on "<<Q0.size()<<" element space with "<<L);
-  OPHAC_DTRACE("D0="<<D0);
-  OPHAC_DTRACE("Q0="<<Q0);
-  Merges result;
-  Dists   D = D0;
-  Quivers Q = Q0;
-  Sizes   S = newSizes(Q.size());
-  Merge merge = findMerge_approx(D,Q);
-  while(merge != no_merge) {
-    result.push_back(merge);
-    OPHAC_DTRACE("Next merge:"<<merge);
-    const uint a = merge.second.first;
-    const uint b = merge.second.second;
-    D = mergeDists(D,S,a,b,L);
-    S = mergeSizes(S,a,b);
-    Q = mergeQuivers(Q,a,b);
-    OPHAC_DTRACE("--> D="<<D);
-    OPHAC_DTRACE("--> Q="<<Q);
-    merge = findMerge_approx(D,Q);
-  }
-  OPHAC_DTRACE("Completed with "<<result.size()<<" merges: "<<result);
-  return result;
+  const ApproxMergeFinder mf;
+  return linkage<ApproxMergeFinder>(D0,Q0,L,mf);
 }
 
 std::ostream&
