@@ -87,7 +87,7 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     return acs
 
     
-def approx_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
+def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
     '''
     Produces an order preserving hierarchical clustering of (M,Q) using parallel 
     processing with a number of processes and a number of samples to generate.
@@ -127,11 +127,18 @@ def approx_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     if isinstance(mm,hac.Quivers):
         qq = Q.quivers
 
-    # TODO: generate and yield to avoid memory usage
+    approx_method = None
+    if mode == 'untied':
+        approx_method = _untied_linkage
+    elif mode == 'rndpick':
+        approx_method = _rndpick_linkage
+    else:
+        raise Exception('Unknown approximation mode: "' +  mode + '"')
+        
     X    = (mm,qq,L)
     data = [X for _ in range(n)]
     with mp.Pool(processes=procs) as pool:
-        results = pool.map(_p_linkage, data)
+        results = pool.map(_untied_linkage, data)
 
     acs      = [hac.AC(j,d) for j,d in results]
     d0       = hac.DistMatrix(mm)
@@ -143,6 +150,10 @@ def approx_linkage(D,G=None,L='complete',n=1,procs=4,p=1,K=1e-12):
     return result
 
 def _p_linkage(XX):
+    _getLogger(_p_linkage).warning('Deprecated. use ophac.hierarchy._untied_linkage')
+    return _untied_linkage(XX)
+
+def _untied_linkage(XX):
     '''
     Parallel method called by pool.map.
     TODO: consider [gaussian] noise about zero. The current solution
