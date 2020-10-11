@@ -72,6 +72,7 @@ class HACUntied_cpp:
             if not 'seed' in kwargs:
                 raise Exception('approx mode (a.k.a. rndpick) requires seed.')
 
+            self.log.info('seed is %d', kwargs['seed'])
             data['seed'] = kwargs['seed']
 
         token  = str(uuid.uuid1())
