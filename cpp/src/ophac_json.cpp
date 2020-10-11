@@ -49,13 +49,15 @@ ophac::json::linkage(const nlohmann::json& input) {
   OPHAC_DTRACE("ophac::json::linkage - deserialised; n:"<<Q.size()<<" L:"<<L<<".");
 
   Merges merges;
-  
+
   if(input["mode"] == "untied") {
+    OPHAC_DTRACE("Running untied linkage mode.");
     merges = linkage_untied(D,Q,L);
     OPHAC_DTRACE("ophac::json::linkage - Untied linkage completed; #merges:"<<
 		 merges.size());
   } else
     if(input["mode"] == "approx") {
+      OPHAC_DTRACE("Running approx linkage mode.");
       merges = linkage_approx(D,Q,L);
       OPHAC_DTRACE("ophac::json::linkage - Approximate linkage completed; #merges:"<<
 		   merges.size());
