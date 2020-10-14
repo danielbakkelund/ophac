@@ -87,7 +87,7 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     return acs
 
     
-def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
+def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
     '''
     Produces an order preserving hierarchical clustering of (M,Q) using parallel 
     processing with a number of processes and a number of samples to generate.
@@ -102,6 +102,10 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
     
     n      - The number of samples to run.
     procs  - Number of processes to run in parallel. Defaults to 4.
+    mode   - The approximation mode to use.
+             untied  - add noise to the dissimilarity and run un-tied
+             rndpick - resolve ties by picking a random pair
+             Default is rndpick.
 
     For the other parameters, se "linkage".
 
@@ -125,9 +129,12 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
             hac.DistMatrix(mm).n, n, procs)
 
     qq = G
-    if isinstance(mm,hac.Quivers):
+    if isinstance(qq,hac.Quivers):
         qq = Q.quivers
 
+    if qq is None:
+        qq = [list()]*hac.DistMatrix(mm).n
+        
     approx_method = None
     if mode == 'untied':
         approx_method = _untied_linkage
@@ -136,7 +143,9 @@ def approx_linkage(D,G=None,L='complete',n=1,mode='untied',procs=4,p=1,K=1e-12):
     else:
         raise Exception('Unknown approximation mode: "' +  mode + '"')
 
-    seed = np.random.randint(50000, size=n)
+    CPP_MAX_UINT = 4294967294
+    
+    seed = np.random.randint(CPP_MAX_UINT, size=n)
     data = [(mm,qq,L,int(s)) for s in seed]
     with mp.Pool(processes=procs) as pool:
         results = pool.map(approx_method, data)
