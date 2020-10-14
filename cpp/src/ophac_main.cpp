@@ -22,6 +22,7 @@
 #include <ctime>
 #include "ophac.hpp"
 #include "ophac_json.hpp"
+#include "ophac_trace.hpp"
 
 void seed(const unsigned int s) {
   std::srand(s);
@@ -43,9 +44,12 @@ int main(const int nargs, const char** args) {
 
   if(input.contains("seed")) {
     const unsigned int s = input["seed"].get<unsigned int>();
+    OPHAC_DTRACE("External seed:"<<s);
     seed(s);
   } else {
-    seed(std::time(nullptr));
+    const unsigned int s = std::time(nullptr);
+    OPHAC_DTRACE("Time seed:"<<s);
+    seed(s);
   }
 
   const nlohmann::json result = ophac::json::linkage(input);
