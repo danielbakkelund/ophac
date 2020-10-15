@@ -68,12 +68,15 @@ class HACUntied_cpp:
                 'L':self.lnk,
                 'mode':mode}
 
-        if mode == 'approx':
-            if not 'seed' in kwargs:
+        seed = 42
+        if not 'seed' in kwargs:
+            if mode == 'approx':
                 raise Exception('approx mode (a.k.a. rndpick) requires seed.')
-
+        else:
+            seed = kwargs['seed']
             self.log.info('seed is %d', kwargs['seed'])
-            data['seed'] = kwargs['seed']
+
+        data['seed'] = seed
 
         token  = str(uuid.uuid1())
         ofname = path.join(self.cpp_dir, token + '_input.json')
@@ -87,15 +90,16 @@ class HACUntied_cpp:
         process   = sp.Popen([self.cpp_exe, ofname, ifname],
                              stdout=sp.PIPE, stderr=sp.PIPE)
         std,err   = process.communicate()
-        if process.returncode != 0:
-            raise Exception('C++ ophac exited with return code %d' %
-                            process.returncode)
 
         if len(std) > 0:
             self.log.warning('C++ output:\n%s', std)
         if len(err) > 0:
             self.log.error('C++ error output:\n%s', err)
-        
+
+        if process.returncode != 0:
+            raise Exception('C++ ophac exited with return code %d' %
+                            process.returncode)
+
         self.log.info('C++ ophac completed in %1.3f s.', time.time() - cpp_start)
 
         with open(ifname, 'r') as inf:
@@ -104,6 +108,8 @@ class HACUntied_cpp:
         dists = result['dists']
         joins = [tuple(x) for x in result['joins']]
 
+        self.seed_used = result['seed']
+        
         os.remove(ofname)
         os.remove(ifname)
         
