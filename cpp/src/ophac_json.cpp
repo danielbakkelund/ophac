@@ -77,5 +77,6 @@ ophac::json::linkage(const nlohmann::json& input) {
   json result;
   result["dists"] = json(dists);
   result["joins"] = json(pairs);
+  result["seed"]  = input["seed"];
   return result;
 }

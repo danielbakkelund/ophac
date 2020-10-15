@@ -31,13 +31,15 @@ echo '{' > ${INPUT_FILE}
 echo '  "D":[5.8, 4.2, 6.9, 2.6,6.7, 1.7, 7.2,1.9, 5.6,7.6],' >> ${INPUT_FILE}
 echo '  "Q":[[],[],[],[],[]],' >> ${INPUT_FILE}
 echo '  "L":"complete",' >> ${INPUT_FILE}
-echo '  "mode":"untied"' >> ${INPUT_FILE}
+echo '  "mode":"untied",' >> ${INPUT_FILE}
+echo '  "seed":666' >> ${INPUT_FILE}
 echo '}' >> ${INPUT_FILE}
 
 echo Generating expected file ${EXPECTED_FILE}
 echo '{' > ${EXPECT_FILE}
 echo ' "dists":[1.7, 2.6, 5.6, 7.6],' >> ${EXPECT_FILE}
-echo ' "joins":[[1,3],[0,3],[0,2],[0,1]]' >> ${EXPECT_FILE}
+echo ' "joins":[[1,3],[0,3],[0,2],[0,1]],' >> ${EXPECT_FILE}
+echo ' "seed":666' >> ${EXPECT_FILE}
 echo '}' >> ${EXPECT_FILE}
 
 echo Running ${PROGRAM}
