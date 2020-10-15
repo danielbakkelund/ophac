@@ -150,7 +150,7 @@ def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
     with mp.Pool(processes=procs) as pool:
         results = pool.map(approx_method, data)
 
-    acs      = [hac.AC(j,d) for j,d in results]
+    acs      = [hac.AC(j,d) for j,d,_ in results]
     d0       = hac.DistMatrix(mm)
 
     result = hac._pickBest(d0, acs=acs, ord=p, dK=K)
@@ -172,7 +172,7 @@ def _rndpick_linkage(XX):
     hc  = hac.HACUntied(lnk)
     ac  = hc.generate(D,Q,mode='approx',seed=seed)
     log.info('Time: %1.4f s.', time.time() - stt)
-    return (ac.joins,ac.dists)
+    return (ac.joins,ac.dists,hc.seed_used)
 
 def _p_linkage(XX):
     _getLogger(_p_linkage).warning('Deprecated. use ophac.hierarchy._untied_linkage')
@@ -216,7 +216,7 @@ def _untied_linkage(XX):
              (ttm,rnt,prt))
 
     denoised = list(_dists(ac.joins,mm,lnk))
-    return (ac.joins,denoised)
+    return (ac.joins,denoised,ac.seed_used)
 
 def _dists(joins,D,L,precision=30):
     '''
