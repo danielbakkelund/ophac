@@ -130,7 +130,7 @@ def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
 
     qq = G
     if isinstance(qq,hac.Quivers):
-        qq = Q.quivers
+        qq = G.quivers
 
     if qq is None:
         qq = [list()]*hac.DistMatrix(mm).n
