@@ -75,9 +75,11 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     M = hac.DistMatrix(D)
     log.info('Clustering %d elements.', M.n)
     Q = None
-    if G is not None:
+    if G:
         Q = hac.Quivers(G)
+    else:
         log.info('No order relation specified.')
+        Q = hac.Quivers(relation=[], n=M.n)
 
     start    = time.time()
     hc       = hac.HAC(lnk=L, ord=p, dK=K)
@@ -130,7 +132,7 @@ def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
 
     qq = G
     if isinstance(qq,hac.Quivers):
-        qq = Q.quivers
+        qq = G.quivers
 
     if qq is None:
         qq = [list()]*hac.DistMatrix(mm).n
