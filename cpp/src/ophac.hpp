@@ -31,7 +31,8 @@ namespace ophac {
   enum Linkage {single, average, complete};
 
   std::ostream& operator << (std::ostream&,const Linkage);
-  
+
+  Linkage linkageFromString(const std::string&);
   
   typedef std::vector<uint>    Sizes;
   typedef std::vector<ftype>   Dists;
@@ -48,7 +49,7 @@ namespace ophac {
 
   Merges linkage_untied(const Dists&,const Quivers&,const Linkage);
   Merges linkage_approx(const Dists&,const Quivers&,const Linkage);
-
+  
   template<class MergeFinder>
   Merges linkage(const Dists&,const Quivers&,const Linkage, const MergeFinder);
   

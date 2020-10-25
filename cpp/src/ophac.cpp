@@ -22,7 +22,23 @@
 #include <stdexcept>
 #include <algorithm>
 #include <random>
+#include <sstream>
 
+ophac::Linkage
+ophac::linkageFromString(const std::string& lnk) {
+  if(lnk == "single") {
+    return single;
+  }
+  if(lnk == "average") {
+    return average;
+  }
+  if(lnk == "complete") {
+    return complete;
+  }
+  std::ostringstream msg;
+  msg<<"Unknown linkage:'"<<lnk<<"'";
+  throw std::invalid_argument(msg.str());
+}
 
 namespace {
   struct UntiedMergeFinder {

@@ -17,13 +17,14 @@ DEPFILE = .dependencies
 JSONDIR = json
 DISTDIR = release
 LIBDIR  = $(DISTDIR)/lib
+LIBBIN  = libophacuntied.a
 INCDIR  = $(DISTDIR)/include
-LIBFILE = $(LIBDIR)/libophacuntied.a
+LIBFILE = $(LIBDIR)/$(LIBBIN)
 EXEFILE = $(LIBDIR)/ophac_untied
 
 CC = g++
-CFLAGS = $(STDFLAG) -c -W -Wall -pedantic $(OPTFLAGS) -I./src -I$(JSONDIR)/include $(LOCALFLAGS) $(DEBUGFLAGS)
-COMPILE = $(CC) $(CFLAGS) 
+CFLAGS = $(STDFLAG) -W -Wall -pedantic $(OPTFLAGS) -I./src -I$(JSONDIR)/include $(LOCALFLAGS) $(DEBUGFLAGS)
+COMPILE = $(CC) -c $(CFLAGS) 
 
 LIB_LNK    = ar
 LIB_LFLAGS = -rcs
@@ -33,6 +34,11 @@ EXE_LNK    = g++
 EXE_LFLAGS = -L$(LIBDIR) -lophacuntied -o
 EXE_LINK   = $(EXE_LNK) $(EXE_LFLAGS)
 
+PYBIND_SRC = $(wildcard pybind_src/*.cpp)
+PYBIND_MOD = ophac_cpp
+PYBIND_INC = `python3 -m pybind11 --includes`
+PYBIND_BIN = $(LIBDIR)/$(PYBIND_MOD)`python3-config --extension-suffix`
+PYBIND_LNK = -L$(LIBDIR) -lophacuntied -o $(PYBIND_BIN)
 
 RM = rm -f
 
@@ -71,6 +77,9 @@ $(LIBFILE): $(LIBDIR) $(OBJFILES) $(SRCFILES)
 $(EXEFILE): $(LIBDIR) $(OBJFILES) $(SRCFILES)
 	$(RM) $(EXEFILE)
 	$(EXE_LINK) $(EXEFILE) $(wildcard src/*_main.o)
+
+pybind:
+	$(CC) $(CFLAGS) -undefined dynamic_lookup $(PYBIND_SRC) $(PYBIND_INC) $(PYBIND_LNK)
 
 tests: install
 	@cd test && $(MAKE) STD=$(STD) LOCALFLAGS=$(LOCALFLAGS) all
