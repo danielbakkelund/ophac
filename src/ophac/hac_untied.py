@@ -24,95 +24,60 @@ def _getLogger(x):
     return logging.getLogger(__name__ + '.' + x.__name__)
 
 def HACUntied(lnk):
-    import os
-    log        = _getLogger(HACUntied)
-    cpp_exe_ev = 'OPHAC_CPP_EXE'
-    cpp_dir_ev = 'OPHAC_CPP_FILEDIR'
-    if cpp_exe_ev in os.environ and cpp_dir_ev in os.environ:
-        from numpy.random import randint
+    log = _getLogger(HACUntied)    
+    cpp = True
+    try:
+        import ophac_cpp
+        log.info('C++ extension available.')
+    except ModuleNotFoundError as e:
+        log.warning('C++ extension not available.')
+        cpp = False
+    
+    if cpp:
         log.info('Using C++ extension.')
-        cpp_exe = os.environ[cpp_exe_ev]
-        cpp_dir = os.environ[cpp_dir_ev]
-        return HACUntied_cpp(lnk,cpp_exe,cpp_dir)
+        return HACUntied_cpp(lnk)
     else:
         log.info('Using python implementation.')
         return HACUntied_python(lnk)
 
 class HACUntied_cpp:
-
-    def __init__(self,lnk,cpp_exe,cpp_dir):
+       
+    def __init__(self,lnk):
         self.log     = _getLogger(HACUntied_cpp)
         self.lnk     = lnk
-        self.cpp_exe = cpp_exe
-        self.cpp_dir = cpp_dir
-        self.log.info('Instantiated with L:%s exe:%s dir:%s',
-                      lnk, cpp_exe, cpp_dir)
+        self.log.info('Instantiated with L:%s', lnk)
 
     def generate(self,dissim,order=None,mode='untied',**kwargs):
-        import json
-        import os
-        import sys
         import time
-        import os.path    as path
-        import subprocess as sp
-        import uuid
+        import ophac_cpp    as cpp
+        import numpy        as np
+        import numpy.random as rnd
 
-        self.log.info('Running on %d element space with mode %s.',
-                      dissim.n, mode)
+        CPP_MAX_UINT = 4294967294
+
+        # Call every time -- will be ignored except for the first call.
+        self.seed_used = cpp.seed(int(rnd.randint(CPP_MAX_UINT)))
         
-        if order is None:
-            order = Quivers(n=dissim.n,relation=[])
+        self.log.info('Running on %d element space with mode %s and seed %d.',
+                      dissim.n, mode, self.seed_used)
+
+        dd = dissim.dists
+        qq = [list() for _ in np.arange(dissim.n)]        
+        if order:
+            qq = order.quivers
             
-        data = {'D':dissim.dists,
-                'Q':order.quivers,
-                'L':self.lnk,
-                'mode':mode}
-
-        seed = 42
-        if not 'seed' in kwargs:
-            if mode == 'approx':
-                raise Exception('approx mode (a.k.a. rndpick) requires seed.')
-        else:
-            seed = kwargs['seed']
-            self.log.info('seed is %d', kwargs['seed'])
-
-        data['seed'] = seed
-
-        token  = str(uuid.uuid1())
-        ofname = path.join(self.cpp_dir, token + '_input.json')
-        ifname = path.join(self.cpp_dir, token + '_result.json')
-        
-        with open(ofname, 'w') as outf:
-            json.dump(data,outf,indent=3)
-
-        self.log.info('Running c++ ophac %s --> %s', ofname, ifname)
         cpp_start = time.time()
-        process   = sp.Popen([self.cpp_exe, ofname, ifname],
-                             stdout=sp.PIPE, stderr=sp.PIPE)
-        std,err   = process.communicate()
+        ac = None
+        if mode == 'approx':
+            ac = cpp.linkage_approx(dd,qq,self.lnk)
+        else:
+            assert mode == 'untied'
+            ac = cpp.linkage_untied(dd,qq,self.lnk)
 
-        if len(std) > 0:
-            self.log.warning('C++ output:\n%s', std)
-        if len(err) > 0:
-            self.log.error('C++ error output:\n%s', err)
+        self.log.info('C++ ophac (%s) completed in %1.3f s.',
+                      mode, time.time() - cpp_start)
 
-        if process.returncode != 0:
-            raise Exception('C++ ophac exited with return code %d' %
-                            process.returncode)
-
-        self.log.info('C++ ophac completed in %1.3f s.', time.time() - cpp_start)
-
-        with open(ifname, 'r') as inf:
-            result = json.load(inf)
-        
-        dists = result['dists']
-        joins = [tuple(x) for x in result['joins']]
-
-        self.seed_used = result['seed']
-        
-        os.remove(ofname)
-        os.remove(ifname)
-        
+        dists,joins = zip(*ac)
         return AC(dists=dists,joins=joins)
 
             

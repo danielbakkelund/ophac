@@ -16,14 +16,6 @@
 
 OSNAME=`uname -s`
 
-if [[ $OSNAME == CYGWIN* ]]; then
-    echo "Cygwin detected."
-    CYGW=0
-else
-    echo "Assuming $OSNAME has Unix-style path layout."
-    CYGW=1
-fi
-
 if test -e ${PWD}'/xlibs/upyt' ; then
 
     # Relative path to unit test framework.
@@ -32,27 +24,14 @@ if test -e ${PWD}'/xlibs/upyt' ; then
     # upyt dir
     UPYT_ABS_SRC="unset"
     cd $UPYT_HOME
-    if test "$CYGW" -eq "0"; then
-	UPYT_ABS_SRC=`cygpath -a -w $PWD/src`
-	UPYT_ABS_SRC=${UPYT_ABS_SRC//\\/\\\\}
-    else
-	UPYT_ABS_SRC=${PWD}/src
-    fi
+    UPYT_ABS_SRC=${PWD}/src
     cd - > /dev/null
 
 
     # Current dir
-    if test "$CYGW" -eq "0"; then
-	P=`cygpath -a -w $PWD/src`
-	PP=${P//\\/\\\\}
-	T=`cygpath -a -w $PWD/test`
-	TP=${T//\\/\\\\}
-	T=`cygpath -a -w $PWD/systest`
-	TP=${T//\\/\\\\}
-	export PYTHONPATH=${PP}';'${TP}';'${UPYT_ABS_SRC}
-    else
-	export PYTHONPATH=${PWD}/src':'${PWD}/test':'${UPYT_ABS_SRC}':'${PWD}/systest
-    fi
+    export PYTHONPATH=${PWD}/src':'${PWD}/test':'${UPYT_ABS_SRC}':'${PWD}/systest
+    
+    export PYTHONPATH=${PYTHONPATH}:${PWD}/cpp/release/lib
 
     echo "PYTHONPATH=$PYTHONPATH"
 
@@ -61,9 +40,5 @@ else # not exists xlibs
     echo 'You must run ./init.sh prior to sourcing this script.'
     exit 42
 fi
-
-echo Setting C++ extension system variables
-export OPHAC_CPP_EXE=${PWD}/cpp/release/lib/ophac_untied
-export OPHAC_CPP_FILEDIR=${PWD}/'.ophac_cpp'
 
 mkdir ${OPHAC_CPP_FILEDIR}
