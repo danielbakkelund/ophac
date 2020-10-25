@@ -47,6 +47,7 @@ OBJFILES := $(patsubst %.cpp,%.o,$(SRCFILES))
 
 default: 
 	@$(MAKE) install
+	@$(MAKE) pybind
 
 all: 
 	@$(MAKE) install
