@@ -61,6 +61,11 @@ def randomOrder(N,p):
                 quivs[i].append(j)
 
             lindex += 1
+
+
+    pi    = np.random.permutation(np.arange(N))
+    ip,_  = zip(*sorted(zip(np.arange(N),pi), key=lambda x : x[1]))
+    quivs = [[pi[x] for x in quivs[ip[i]]] for i in np.arange(N)] 
             
     return dt.Quivers(quivs)
 
