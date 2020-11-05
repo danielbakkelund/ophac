@@ -31,7 +31,7 @@ if test ! -d tmp; then
 fi
 
 echo Building C++ extensions
-(cd cpp; make install)
+(cd cpp; make)
 
 echo 'Remember to source "setPyPath.sh" to set the python path.'
 
