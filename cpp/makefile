@@ -23,7 +23,7 @@ LIBFILE = $(LIBDIR)/$(LIBBIN)
 EXEFILE = $(LIBDIR)/ophac_untied
 
 CC = g++
-CFLAGS = $(STDFLAG) -W -Wall -pedantic $(OPTFLAGS) -I./src -I$(JSONDIR)/include $(LOCALFLAGS) $(DEBUGFLAGS)
+CFLAGS = $(STDFLAG) -W -Wall -Wno-range-loop-analysis -pedantic $(OPTFLAGS) -I./src -I$(JSONDIR)/include $(LOCALFLAGS) $(DEBUGFLAGS)
 COMPILE = $(CC) -c $(CFLAGS) 
 
 LIB_LNK    = ar
