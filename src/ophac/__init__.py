@@ -25,3 +25,16 @@ This file was auomatically generated at Wed Feb 5 13:42:06 CET 2020
 
 from pkgutil import extend_path
 __path__ = extend_path(__path__, __name__)
+
+import ophac.hierarchy as hierarchy
+import ophac.rnd       as rnd
+
+def test():
+    '''
+    Smoke test of installation.
+    '''
+    D,Q  = rnd.randomOrderedDissimSpace(30,0.1,3)
+    assert hac.linkage(D,Q)        is not None
+    assert hac.approx_linkage(D,Q) is not None
+    print('Smoke test of ophac seems to work just fine.')
+
