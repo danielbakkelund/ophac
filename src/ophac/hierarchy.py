@@ -163,7 +163,7 @@ def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
 
 def _rndpick_linkage(XX):
     import ophac.dtypes     as dt
-    import ophac.hac_untied as hac
+    import ophac.hac_approx as hac
     import time
     
     mm,qq,lnk,seed = XX

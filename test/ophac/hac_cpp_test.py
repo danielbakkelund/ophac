@@ -17,26 +17,14 @@
 
 
 import upyt.unittest    as ut
-import ophac.hac_untied as unhac
+import ophac.hac_approx as unhac
 import ophac.dtypes     as dt
-import os
 
 class TestNoLinkageSmoke(ut.UnitTest):
-    
     '''
     Smoke test of facade.
     '''
-    def setUp(self):
-        import copy
-        envars   = ['OPHAC_CPP_EXE','OPHAC_CPP_FILEDIR']
-        self.env = copy.deepcopy(os.environ)
-        for var in envars:
-            if var in os.environ:
-                del os.environ[var]
 
-    def tearDown(self):
-        os.environ = self.env
-    
     def test_fig3_5_SL_NoSmoke(self):
         '''
         Figure 3.5 in Jain and Dubes (1988)
@@ -74,7 +62,7 @@ class TestNoLinkageSmoke(ut.UnitTest):
 
     def testCmpToHAC(self):
         import ophac.hac        as hac
-        import ophac.hac_untied as unhac
+        import ophac.hac_approx as unhac
         import ophac.rnd        as rnd
 
         D,G = rnd.randomOrderedDissimSpace(N=100,p=0.01,t=1)

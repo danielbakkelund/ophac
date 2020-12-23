@@ -37,4 +37,11 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.0',
+    install_requires=[
+        'ophac_cpp',
+        'numpy',
+        'matplotlib',
+        'scipy'
+    ],
+    zip_safe=False
 )

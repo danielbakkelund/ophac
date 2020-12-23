@@ -17,7 +17,7 @@
 
 
 import upyt.unittest    as ut
-import ophac.hac_untied as unhac
+import ophac.hac_approx as unhac
 import ophac.dtypes     as dt
 
 class TestNoLinkageSmoke(ut.UnitTest):
@@ -36,7 +36,7 @@ class TestNoLinkageSmoke(ut.UnitTest):
                  7.6]
 
         hc = unhac.HACUntied('single')
-        ac = hc.generate(dt.DistMatrix(dists))
+        ac = hc.generate(dt.DistMatrix(dists), mode='approx', seed=42)
         
         expJoins = [(1,3),(1,2),(0,2),(0,1)]
         expDists = [1.7, 1.9, 2.6, 4.2]
@@ -54,15 +54,15 @@ class TestNoLinkageSmoke(ut.UnitTest):
         K = 2.0
 
         hc  = unhac.HACUntied(L)
-        ac = hc.generate(D,G)
+        ac = hc.generate(D,G, mode='approx', seed=42)
         
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
-        actualUltrametric   = ult.ultrametric(ac, 3, K)
+        actualUltrametric   = ult.ultrametric(ac, 3,K)
         self.assertEquals(expectedUltrametric, actualUltrametric)
 
     def testCmpToHAC(self):
         import ophac.hac        as hac
-        import ophac.hac_untied as unhac
+        import ophac.hac_approx as unhac
         import ophac.rnd        as rnd
 
         D,G = rnd.randomOrderedDissimSpace(N=100,p=0.01,t=1)
@@ -73,6 +73,6 @@ class TestNoLinkageSmoke(ut.UnitTest):
             self.assertEquals(1,len(cl_acs), 'classic hac witb %s linkage failed' % L)
 
             un_hc = unhac.HACUntied(L)
-            un_ac = un_hc.generate(D,G)
+            un_ac = un_hc.generate(D,G, mode='approx', seed=42)
 
             self.assertEquals(cl_acs[0], un_ac, 'failed for %s linkage' % L)
