@@ -20,9 +20,11 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+__version__ = '0.3.0'
+    
 setuptools.setup(
     name='ophac',
-    version='0.3.0',
+    version=__version__,
     author='Daniel Bakkelund',
     author_email='daniel.bakkelund@ifi.uio.no',
     description='Order Preserving Hierarchical Agglomerative Clustering',
