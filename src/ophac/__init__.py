@@ -34,7 +34,7 @@ def test():
     Smoke test of installation.
     '''
     D,Q  = rnd.randomOrderedDissimSpace(30,0.1,3)
-    assert hac.linkage(D,Q)        is not None
-    assert hac.approx_linkage(D,Q) is not None
+    assert hierarchy.linkage(D,Q)        is not None
+    assert hierarchy.approx_linkage(D,Q) is not None
     print('Smoke test of ophac seems to work just fine.')
 
