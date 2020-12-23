@@ -40,5 +40,3 @@ else # not exists xlibs
     echo 'You must run ./init.sh prior to sourcing this script.'
     exit 42
 fi
-
-mkdir ${OPHAC_CPP_FILEDIR}
