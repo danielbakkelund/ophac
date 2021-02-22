@@ -38,5 +38,4 @@ if test -e ${PWD}'/xlibs/upyt' ; then
 else # not exists xlibs
     echo '##################### ERROR #########################'
     echo 'You must run ./init.sh prior to sourcing this script.'
-    exit 42
 fi
