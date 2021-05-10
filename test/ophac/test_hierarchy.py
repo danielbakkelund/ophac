@@ -16,11 +16,11 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 
-import upyt.unittest   as ut
+import unittest        as ut
 import ophac.hierarchy as hierarchy
 import ophac.dtypes    as dt
 
-class TestNoLinkageSmoke(ut.UnitTest):
+class TestNoLinkageSmoke(ut.TestCase):
     '''
     Smoke test of facade.
     '''
@@ -42,7 +42,7 @@ class TestNoLinkageSmoke(ut.UnitTest):
         expDists = [1.7, 1.9, 2.6, 4.2]
         expAc    = dt.AC(expJoins, expDists)
 
-        self.assertEquals(expAc, ac[0])
+        self.assertEqual(expAc, ac[0])
 
     def testCompletion(self):
         import ophac.ultrametric as ult
@@ -53,13 +53,13 @@ class TestNoLinkageSmoke(ut.UnitTest):
         K = 2.0
 
         acs = hierarchy.linkage(D,G,L,K=K)
-        self.assertEquals(1, len(acs), 'Too many results.')
+        self.assertEqual(1, len(acs), 'Too many results.')
         
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
         actualUltrametric   = ult.ultrametric(acs[0], 3, K)
-        self.assertEquals(expectedUltrametric, actualUltrametric)
+        self.assertEqual(expectedUltrametric, actualUltrametric)
 
-class TestNoParallelLinkageSmoke(ut.UnitTest):
+class TestNoParallelLinkageSmoke(ut.TestCase):
     '''
     Smoke test of facade.
     '''
@@ -82,7 +82,7 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
         expDists = [1.7, 1.9, 2.6, 4.2]
         expAc    = dt.AC(expJoins, expDists)
 
-        self.assertEquals(expAc, acs[0])
+        self.assertEqual(expAc, acs[0])
 
     def testCompletion(self):
         import ophac.ultrametric as ult
@@ -93,8 +93,8 @@ class TestNoParallelLinkageSmoke(ut.UnitTest):
         K = 2.0
 
         acs = hierarchy.approx_linkage(D,G,L,K=K)
-        self.assertEquals(1, len(acs), 'Too many results.')
+        self.assertEqual(1, len(acs), 'Too many results.')
         
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
         actualUltrametric   = ult.ultrametric(acs[0], 3, K)
-        self.assertEquals(expectedUltrametric, actualUltrametric)
+        self.assertEqual(expectedUltrametric, actualUltrametric)

@@ -19,7 +19,7 @@ import ophac.ultrametric as ult
 import ophac.dtypes      as dt
 import upyt.unittest     as ut
 
-class UltrametricTest(ut.UnitTest):
+class UltrametricTest(ut.TestCase):
 
     def testConvert(self):
         K     = 3 + 1e-12
@@ -38,7 +38,7 @@ class UltrametricTest(ut.UnitTest):
 
         expected = dt.DistMatrix(ultra)
 
-        self.assertEquals(expected, Mu)
+        self.assertEqual(expected, Mu)
 
     def testInjectivity(self):
         '''
@@ -71,8 +71,8 @@ class UltrametricTest(ut.UnitTest):
         expected = [dt.Partition(data) for data in expectedData]        
         resQ, resRho = ult.toPartitionChain(dt.DistMatrix(dists))
 
-        self.assertEquals(expected, resQ, 'Wrong partitions')
-        self.assertEquals(expectedRhos, resRho, 'Wrong partitions')
+        self.assertEqual(expected, resQ, 'Wrong partitions')
+        self.assertEqual(expectedRhos, resRho, 'Wrong partitions')
 
     def testToPartitionChain2(self):
         dists = [
@@ -92,8 +92,8 @@ class UltrametricTest(ut.UnitTest):
         expected = [dt.Partition(data) for data in expectedData]        
         resQ, resRho = ult.toPartitionChain(dt.DistMatrix(dists))
 
-        self.assertEquals(expected, resQ, 'Wrong partitions')
-        self.assertEquals(expectedRhos, resRho, 'Wrong partitions')
+        self.assertEqual(expected, resQ, 'Wrong partitions')
+        self.assertEqual(expectedRhos, resRho, 'Wrong partitions')
 
     def testTreeIdentical(self):
         uDists1 = [
@@ -143,5 +143,5 @@ class UltrametricTest(ut.UnitTest):
             U  = ult.extend(U, P, dists[i], dK)
             ac = ac + dt.AC(joins[i:i+1], dists[i:i+1])
             eU = ult.ultrametric(ac, N, dK)
-            self.assertEquals(eU, U, #wrp(eU), wrp(U),
+            self.assertEqual(eU, U, #wrp(eU), wrp(U),
                               'Failed at merge i=%d with P=%s' % (i,str(P)))

@@ -15,11 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-import upyt.unittest     as ut
+import unittest          as ut
 import ophac.hac         as hac
 import ophac.ultrametric as ult
 
-class TestNonOrderedClustering(ut.UnitTest):
+class TestNonOrderedClustering(ut.TestCase):
 
     
     def test_fig3_5_SL(self):
@@ -40,7 +40,7 @@ class TestNonOrderedClustering(ut.UnitTest):
         expDists = [1.7, 1.9, 2.6, 4.2]
         expAc    = hac.AgglomerativeClustering(expJoins, expDists)
 
-        self.assertEquals(expAc, ac[0])
+        self.assertEqual(expAc, ac[0])
 
     def test_fig3_5_CL(self):
         '''
@@ -60,7 +60,7 @@ class TestNonOrderedClustering(ut.UnitTest):
         expDists = [1.7, 2.6, 5.6, 7.6]
         expAc    = hac.AgglomerativeClustering(expJoins, expDists)
 
-        self.assertEquals(expAc, ac[0])
+        self.assertEqual(expAc, ac[0])
 
     def test_ex_4_2_CL(self):
         '''
@@ -75,10 +75,10 @@ class TestNonOrderedClustering(ut.UnitTest):
         hc  = hac.HAC('complete')
         acs = hc.generate(D,Q)
         
-        self.assertEquals(1, len(acs), 'Wrong number of results (%s)' % str(acs))
+        self.assertEqual(1, len(acs), 'Wrong number of results (%s)' % str(acs))
         
         expected = hac.AC(joins=[(0,2),(1,2)],dists=[1.0,1.5])
-        self.assertEquals(expected, acs[0])
+        self.assertEqual(expected, acs[0])
 
     def testReproduceUltrametric(self):
         uData = [1, 2, 2, 3, 3,
@@ -111,7 +111,7 @@ class TestNonOrderedClustering(ut.UnitTest):
         for dK,expU in data:
             hc  = hac.HAC(L,dK=dK)
             acs = hc.generate(M,Q)
-            self.assertEquals(1, len(acs), 'too many results for dK=' + str(dK))
+            self.assertEqual(1, len(acs), 'too many results for dK=' + str(dK))
             U   = ult.ultrametric(acs[0], 3, dK)
-            self.assertEquals(expU,U)
+            self.assertEqual(expU,U)
         
