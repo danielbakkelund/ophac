@@ -1,9 +1,9 @@
 
-import upyt.unittest as ut
+import unittest      as ut
 import ophac.rnd     as rnd
 import numpy         as np
 
-class TestStuff(ut.UnitTest):
+class TestStuff(ut.TestCase):
 
     def testAcyclic(self):
         for _ in range(300):
