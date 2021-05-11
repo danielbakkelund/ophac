@@ -145,25 +145,3 @@ class UltrametricTest(ut.TestCase):
             eU = ult.ultrametric(ac, N, dK)
             self.assertEqual(eU, U, #wrp(eU), wrp(U),
                               'Failed at merge i=%d with P=%s' % (i,str(P)))
-
-class TestBugNotAllValuesAreAssignedTest(ut.TestCase):
-
-    def setUp(self):
-        import json
-        import os.path as path
-
-        print('setting up')
-        
-        folder = path.dirname(path.abspath(__file__))
-        fname  = path.join(folder, 'ultrametric_bug_data.json')
-        
-        with open(fname, 'r') as inf:
-            data = json.load(inf)
-
-        self.D = data["D"]
-        self.G = data["Q"]
-
-    def testBug(self):
-        import ophac.hierarchy as hac
-        hac.linkage(self.D,self.G)
-    

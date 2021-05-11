@@ -69,9 +69,16 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     the plotting, and passes any additional arguments on to that method.
     '''
     import ophac.hac as hac
+    import numpy     as np
     import time
     
     log = _getLogger(linkage)
+
+    if np.min(D) < 0:
+        msg = 'Negative dissimilarity coefficients detected.'
+        log.error(msg)
+        raise ValueError(msg)
+    
     M = hac.DistMatrix(D)
     log.info('Clustering %d elements.', M.n)
     Q = None
@@ -121,6 +128,12 @@ def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
     import time
 
     log = _getLogger(approx_linkage)
+
+    if np.min(D) < 0:
+        msg = 'Negative dissimilarity coefficients detected.'
+        log.error(msg)
+        raise ValueError(msg)
+
     
     # Convert types to serialisable ones
     mm = D

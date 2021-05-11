@@ -98,3 +98,25 @@ class TestNoParallelLinkageSmoke(ut.TestCase):
         expectedUltrametric = dt.DistMatrix([1.0, 3.0, 3.0])
         actualUltrametric   = ult.ultrametric(acs[0], 3, K)
         self.assertEqual(expectedUltrametric, actualUltrametric)
+
+class TestNegativeDissimCoeffs(ut.TestCase):
+
+    def setUp(self):
+        import logging
+        log = logging.getLogger('ophac.hierarchy')
+        self.logLevel = log.getEffectiveLevel()
+        log.setLevel(logging.FATAL)
+
+    def tearDown(self):
+        import logging
+        log = logging.getLogger('ophac.hierarchy')
+        log.setLevel(self.logLevel)
+        
+    def testBug(self):
+        import ophac.hierarchy as hac
+        D = [1,2,-0.1]
+        G = None
+        exact_func  = lambda : hac.linkage(D,G)
+        approx_func = lambda : hac.approx_linkage(D,G)
+        self.assertRaises(ValueError,exact_func)
+        self.assertRaises(ValueError,approx_func)
