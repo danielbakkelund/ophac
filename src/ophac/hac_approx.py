@@ -55,8 +55,10 @@ class HACUntied_cpp:
 
         CPP_MAX_UINT = 4294967294
 
-        # Call every time -- will be ignored except for the first call.
-        self.seed_used = cpp.seed(int(rnd.randint(CPP_MAX_UINT)))
+        if 'seed' in kwargs:
+            self.seed_used = cpp.seed(kwargs['seed'])
+        else:
+            self.seed_used = cpp.seed(int(rnd.randint(CPP_MAX_UINT)))
         
         self.log.info('Running on %d element space with mode %s and seed %d.',
                       dissim.n, mode, self.seed_used)
