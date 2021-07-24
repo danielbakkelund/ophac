@@ -16,11 +16,12 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 import setuptools
+import ophac
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-__version__ = '0.3.0'
+__version__ = ophac.__version__
     
 setuptools.setup(
     name='ophac',

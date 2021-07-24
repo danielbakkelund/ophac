@@ -29,6 +29,8 @@ __path__ = extend_path(__path__, __name__)
 import ophac.hierarchy as hierarchy
 import ophac.rnd       as rnd
 
+__version__ = '0.3.1'
+
 def test():
     '''
     Smoke test of installation.
