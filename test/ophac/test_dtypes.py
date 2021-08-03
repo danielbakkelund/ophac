@@ -182,6 +182,14 @@ class QuiversTest(ut.TestCase):
         Q   = clst.Quivers(n=n, relation=rel).transitiveClosure()
         res = [Q[i] for i in range(len(Q))]
         self.assertEqual(exp,res)
+
+    def testTransitiveClosureWithCycle(self):
+        n   = 4
+        rel = [(0,1),(1,2),(2,3),(3,0)]
+        exp = [[0,1,2,3]]*4
+        Q   = clst.Quivers(n=n,relation=rel).transitiveClosure(lenient=True)
+        res = Q.quivers
+        self.assertEqual(exp,res)
         
 class AggClustTest(ut.TestCase):
 

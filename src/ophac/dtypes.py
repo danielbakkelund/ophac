@@ -183,44 +183,56 @@ class Quivers:
                 visiting[n] = False
                 return False
 
-    def transitiveClosure(self,inPlace=False):
+    def transitiveClosure(self,inPlace=False,lenient=False):
         '''
         Produces a Quivers that is transitively closed.
         If inPlace is True, this object is changed. Otherwise,
         a new Quivers object is returned.
+        If lenient is True, cycles will not lead to exceptions.
         '''
 
-        def _fillInDescendants(n, visited, visiting, data):
+        def _fillInDescendants(n, visited, visiting, visitseq, data):
             if visiting[n]:
-                raise Exception('Cycle in Quivers object detected %d -> %d' % (n,n))
+                if not lenient:
+                    raise Exception('Cycle in Quivers object detected %d -> %d' % (n,n))
+                else:
+                    i = visitseq.index(n)
+                    decs = set.union(*data[i:])
+                    decs.add(n)
+                    return decs
 
             if visited[n]:
                 return data[n]
 
             visiting[n] = True
-            result      = set()
+            visitseq.append(n)
+            decs        = data[n]
             for d in self.quivers[n]:
-                result.add(d)
+                decs.add(d)
                 if not visited[d]:
-                    result.update(_fillInDescendants(d,visited,visiting,data))
+                    decs.update(_fillInDescendants(d,visited,visiting,visitseq,data))
                 else:
-                    result.update(data[d])
+                    decs.update(data[d])
                 
             visited[n]  = True
             visiting[n] = False
-            data[n]     = sorted(result)
-            return result
-        
+            visitseq.pop()
+            #data[n]     = set(decs)
+            return decs
 
+        
         N        = len(self)
-        data     = [[]]*N
+        data     = [set() for _ in range(N)]
         visited  = [False]*N
         visiting = [False]*N
+        visitseq = []
         for i in range(N):
-            _fillInDescendants(i,visited,visiting,data)
+            _fillInDescendants(i,visited,visiting,visitseq,data)
 
+        
+            
         if inPlace:
-            self.quivers = data
+            self.quivers = [sorted(d) for d in data]
             self.transitivelyClosed = True
             return self
         else:

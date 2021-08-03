@@ -175,6 +175,15 @@ class args:
 
         return result[:-1] + '}'
 
+    def __iter__(self):
+        '''
+        Support convert to dict
+        '''
+        for o in self._opts:
+            yield o, getattr(self,o)
+            
+        for k in self._kwTypeMap:
+            yield k, getattr(self,k)
         
 
 def NoneInitializer(dah):
