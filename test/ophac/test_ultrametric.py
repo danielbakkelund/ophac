@@ -19,6 +19,43 @@ import ophac.ultrametric as ult
 import ophac.dtypes      as dt
 import unittest          as ut
 
+
+class TestNonInjectivityLogMessage(ut.TestCase):
+
+    def setUp(self):
+        import logging
+        
+        self.old_get = ult._getLogger
+
+        self.warn_called = False
+        
+        def new_get(x):
+            class MyLog:
+                def warning(*args):
+                    self.warn_called = True
+
+            return MyLog()
+
+        ult._getLogger = new_get
+        
+    def tearDown(self):
+        import logging
+        ult._getLogger = self.old_get
+    
+    def testNonInjectivity(self):
+        '''
+        Check that when eps is too small, then a warning is logged.
+        '''
+
+        N   = 4
+        ac1 = dt.AgglomerativeClustering(joins=[(1,2)], dists=[1.0e30])
+        ac2 = dt.AgglomerativeClustering(joins=[(2,3),(0,1)], dists=[1.0e30,1.0e30])
+        U1  = ult.ultrametric(ac1, N, 1e-30)
+        U2  = ult.ultrametric(ac2, N, 1e-30)
+        self.assertTrue(U1 == U2)
+        self.assertTrue(self.warn_called)
+
+
 class UltrametricTest(ut.TestCase):
 
     def testConvert(self):

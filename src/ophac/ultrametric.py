@@ -19,6 +19,10 @@
 Convert agglomerative clustering to ultrametric
 '''
 
+def _getLogger(x):
+    import logging
+    return logging.getLogger(__name__ + '.' + x.__name__)
+
 def ultrametric(ac, N=-1, eps=1e-12):
     '''
     ac  - The ophac.dtypes.AgglomerativeClustering object from HC
@@ -29,7 +33,7 @@ def ultrametric(ac, N=-1, eps=1e-12):
     '''
     import ophac.dtypes as clst
     import itertools
-
+    
     for i in range(1,len(ac)):
         if not ac.dists[i-1] <= ac.dists[i]:
             raise AssertionError('Join distances not monotone:' + \
@@ -41,6 +45,12 @@ def ultrametric(ac, N=-1, eps=1e-12):
     K = eps
     if len(ac) > 0:
         K = ac.dists[-1] + eps
+        if K <= ac.dists[-1] and eps > 0:
+            log = _getLogger(ultrametric)
+            msg = 'Ultrametric completion threshold too low (%1.4e).' +\
+                ' Lost when added to dendrogram of diameter %1.4e.'
+            log.warning(msg % (eps,ac.dists[-1]))
+            
     L = N*(N-1)//2
     P = clst.Partition(n=N)
     U = clst.DistMatrix([-1]*L)
