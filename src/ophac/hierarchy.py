@@ -96,7 +96,7 @@ def linkage(D, G=None, L='complete', p=1, K=1.0e-12):
     return acs
 
     
-def approx_linkage(D,G=None,L='single',n=1,mode='rndpick',procs=4,p=1,K=1e-12):
+def approx_linkage(D, G=None, L='single', n=10, mode='rndpick', procs=4, p=1, K=1e-12):
     '''
     Produces an order preserving hierarchical clustering of (M,Q) using parallel 
     processing with a number of processes and a number of samples to generate.
@@ -180,7 +180,7 @@ def _rndpick_linkage(XX):
     import time
     
     mm,qq,lnk,seed = XX
-    log = _getLogger(_untied_linkage)
+    log = _getLogger(_rndpick_linkage)
     stt = time.time()
     D   = dt.DistMatrix(mm)
     Q   = dt.Quivers(qq)
