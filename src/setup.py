@@ -18,7 +18,7 @@
 import setuptools
 import ophac
 
-with open("README.md", "r") as fh:
+with open("../README.md", "r") as fh:
     long_description = fh.read()
 
 __version__ = ophac.__version__
@@ -31,7 +31,7 @@ setuptools.setup(
     description='Order Preserving Hierarchical Agglomerative Clustering',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://bitbucket.org/Bakkelund/ophac/src/v02/',
+    url='https://bitbucket.org/Bakkelund/ophac/src/v03/',
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
@@ -41,7 +41,7 @@ setuptools.setup(
     ],
     python_requires='>=3.0',
     install_requires=[
-        'ophac_cpp',
+        'ophac_cpp==0.4.1',
         'numpy',
         'matplotlib',
         'scipy'
