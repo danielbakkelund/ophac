@@ -18,7 +18,7 @@
 import setuptools
 import ophac
 
-with open("../README.md", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 __version__ = ophac.__version__
