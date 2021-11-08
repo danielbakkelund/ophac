@@ -31,7 +31,7 @@ setuptools.setup(
     description='Order Preserving Hierarchical Agglomerative Clustering',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://bitbucket.org/Bakkelund/ophac/src/v03/',
+    url='https://bitbucket.org/Bakkelund/ophac/src/v04/',
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
