@@ -29,13 +29,16 @@ __path__ = extend_path(__path__, __name__)
 import ophac.hierarchy as hierarchy
 import ophac.rnd       as rnd
 
-__version__ = '0.4.2'
+__version__ = '0.4.3'
 
 def test():
     '''
     Smoke test of installation.
     '''
-    D,Q  = rnd.randomOrderedDissimSpace(30,0.1,3)
+    N = 30
+    dissimMatrix,quivers  = rnd.randomOrderedDissimSpace(N,0.1,3)
+    D = dissimMatrix.dists
+    Q = quivers.quivers
     assert hierarchy.linkage(D,Q)        is not None
     assert hierarchy.approx_linkage(D,Q) is not None
     print('Smoke test of ophac seems to work just fine.')
