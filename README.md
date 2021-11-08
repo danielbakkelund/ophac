@@ -24,4 +24,4 @@ python -m pip install ophac [--user]
 ## Source
 
 The full source is available from
-<https://bitbucket.org/Bakkelund/ophac/branch/v04>.
+<https://bitbucket.org/Bakkelund/ophac/src/v04/>.
