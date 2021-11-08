@@ -9,14 +9,19 @@ The [ophac wiki](https://bitbucket.org/Bakkelund/ophac/wiki/Home) provides examp
 The software in this package is released under the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.en.html).
 
 ## Platform requirements
-`ophac` makes use of the following python libraries:
+`ophac` runs on **python 3.0** or greater, and makes use of the following python libraries:
 
-* python >= 3.0
 * numpy
 * scipy
+* [ophac-cpp](https://pypi.org/project/ophac-cpp/)
 
 ## Installation
 
 ```python
 python -m pip install ophac [--user]
 ```
+
+## Source
+
+The full source is available from
+<https://bitbucket.org/Bakkelund/ophac/branch/v04>.
