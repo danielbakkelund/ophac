@@ -43,7 +43,6 @@ setuptools.setup(
     install_requires=[
         'ophac_cpp==0.4.1',
         'numpy',
-        'matplotlib',
         'scipy'
     ],
     zip_safe=False
