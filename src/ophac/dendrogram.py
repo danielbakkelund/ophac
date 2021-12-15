@@ -81,7 +81,7 @@ def _toLinkageMatrix(ac,N,eps=1e-12):
 
     # Merge the rest at the last distance level plus an epsilon
     # to avoid over-writing lines
-    dist = Z[L-1,2] + 1
+    dist = Z[L-1,2] + eps
     for i in range(L,N-1):
         join   = (len(sizes)-2,len(sizes)-1)
         a,b    = (idxMap[join[0]], idxMap[join[1]])
