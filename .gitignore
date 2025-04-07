@@ -11,6 +11,6 @@ tmp
 errs.txt
 src/build/
 src/dist/
-src/ophac_pkg_danielbakkelund.egg-info/
 src/ophac.egg-info/
 src/README.md
+ophac.egg-info/
