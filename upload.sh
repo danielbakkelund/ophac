@@ -7,6 +7,8 @@
 # Stop immediately if a command exits with a non-zero status
 set -e
 
+pip install --upgrade build twine
+
 PACKAGE_NAME="ophac"
 
 # Step 1: Clean previous builds
