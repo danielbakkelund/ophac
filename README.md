@@ -1,5 +1,5 @@
 # ophac -- Order Preserving Hierarachical Agglomerative Clustering
-The code in this project realises the theory described in <https://arxiv.org/abs/2004.12488>.
+The code in this project realises the theory described in [this article](https://link.springer.com/article/10.1007/s10994-021-06125-0).</br>
 The functionality provided is that of _**order preserving hierarchical agglomerative clustering of partially ordered sets**_.
 
 The [ophac wiki](https://bitbucket.org/Bakkelund/ophac/wiki/Home) provides examples of how to use the library.
