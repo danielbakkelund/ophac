@@ -1,17 +1,28 @@
-#!/bin/sh
+#!/bin/bash
 
-rm -rf dist
+# To use this file, set the following environment variables:
+# - TWINE_USERNAME: __token__
+# - TWINE_PASSWORD: <your PyPI token>
 
-cp ../README.md .
+# Stop immediately if a command exits with a non-zero status
+set -e
 
-python3 setup.py sdist
+PACKAGE_NAME="ophac"
 
-if ! test "$?" -eq "0"; then
-    echo "Generating dist failed."
-    exit 42
-fi
+# Step 1: Clean previous builds
+echo "🔄 Cleaning old builds..."
+rm -rf dist/ build/ *.egg-info
 
-python3 -m twine upload dist/*
+# Step 2: Build sdist and wheel
+echo "📦 Building source and wheel distributions..."
+python -m build
 
-rm -f README.md
+# Step 3: Check the distribution
+echo "🕵️ Checking distribution with twine..."
+twine check dist/*
 
+# Step 4: Upload to PyPI
+echo "🚀 Uploading to PyPI..."
+twine upload dist/*
+
+echo "✅ Done! Package $PACKAGE_NAME uploaded to PyPI."
