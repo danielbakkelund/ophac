@@ -1,5 +1,5 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Copyright 2020 Daniel Bakkelund
+# Copyright 2025 Daniel Bakkelund
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,29 +15,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-
-'''
-This init file defines the containing folder to be a namespace package,
-it allows for re-opening.
-
-This file was auomatically generated at Wed Feb 5 13:42:06 CET 2020
-'''
-
-from pkgutil import extend_path
-__path__ = extend_path(__path__, __name__)
-
-from . import _version
-__version__ = _version.__version__
-
-def test():
-    '''
-    Smoke test of installation.
-    '''
-    from . import rnd, hierarchy
-    N = 30
-    dissimMatrix,quivers  = rnd.randomOrderedDissimSpace(N,0.1,3)
-    D = dissimMatrix.dists
-    Q = quivers.quivers
-    assert hierarchy.linkage(D,Q)        is not None
-    assert hierarchy.approx_linkage(D,Q) is not None
-    print('Smoke test of ophac seems to work just fine.')
+include README.md
+recursive-include src/ophac *.py
+recursive-include src/cpp *.cpp *.h
