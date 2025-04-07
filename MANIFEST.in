@@ -16,5 +16,6 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 include README.md
+include pyproject.toml
+recursive-include src/cpp *.cpp *.hpp
 recursive-include src/ophac *.py
-recursive-include src/cpp *.cpp *.h
