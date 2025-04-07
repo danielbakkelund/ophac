@@ -22,6 +22,7 @@ with open("README.md", "r") as fh:
 
 import os
 import re
+from glob import glob
 from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
@@ -39,6 +40,16 @@ def get_version():
 __version__ = get_version()
 
 
+ext_modules = [
+    Pybind11Extension(
+        "ophac_cpp",  # Full path to the module
+        sources=sorted(glob("src/cpp/**/*.cpp", recursive=True)),
+        include_dirs=["src/cpp"],
+        cxx_std=17,
+    )
+]
+
+
 setuptools.setup(
     name='ophac',
     version=__version__,
@@ -50,6 +61,7 @@ setuptools.setup(
     url='https://bitbucket.org/Bakkelund/ophac/src/v04/',
     packages=setuptools.find_packages(where="src"),
     package_dir={"": "src"},
+    ext_modules=ext_modules,
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
