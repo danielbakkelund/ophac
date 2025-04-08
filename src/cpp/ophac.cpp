@@ -1,19 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////
 // Copyright 2020 Daniel Bakkelund
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-//////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////
 
 #include "ophac_trace.hpp"
 #include "ophac.hpp"
@@ -118,7 +118,7 @@ namespace {
       return false;
     }
     visited.insert(a);
-    
+
     for(const ophac::uint c : Q[a]) {
       if(b == c) {
 	return true;
@@ -144,12 +144,12 @@ ophac::canMerge(const Quivers& rel, const uint a, const uint b) {
 }
 
 namespace {
-  
+
   void
-  ophac_transferQuiver(const ophac::Quiver &q, const uint a, const uint b,
+  ophac_transferQuiver(const ophac::Quiver &q, const ophac::uint a, const ophac::uint b,
 		       ophac::Quiver &out) {
     ophac::Quiver tmp;
-    for(const uint j : q) {
+    for(const ophac::uint j : q) {
       if(j < b) {
 	tmp.push_back(j);
       } else if(j > b) {
@@ -159,9 +159,9 @@ namespace {
       }
     }
     // Unique and sorted...
-    const std::set<uint> x(tmp.begin(),tmp.end());
+    const std::set<ophac::uint> x(tmp.begin(),tmp.end());
     out = ophac::Quiver(x.begin(),x.end());
-  } 
+  }
 }
 
 ophac::Quivers
@@ -170,15 +170,15 @@ ophac::mergeQuivers(const Quivers& Q, const uint a, const uint b) {
   for(uint i=0; i<a; ++i) {
     ::ophac_transferQuiver(Q[i],a,b,result[i]);
   }
-  
+
   Quiver A(Q[a].begin(),Q[a].end());
   A.insert(A.end(),Q[b].begin(),Q[b].end());
   ::ophac_transferQuiver(A,a,b,result[a]);
-  
+
   for(uint i=a+1; i<b; ++i) {
     ::ophac_transferQuiver(Q[i],a,b,result[i]);
   }
-  
+
   for(uint i=b+1; i<Q.size(); ++i) {
     ::ophac_transferQuiver(Q[i],a,b,result[i-1]);
   }
@@ -187,7 +187,7 @@ ophac::mergeQuivers(const Quivers& Q, const uint a, const uint b) {
 
 namespace {
   struct dpair_cmp {
-    typedef std::pair<uint,ophac::ftype> T;
+    typedef std::pair<ophac::uint,ophac::ftype> T;
     bool operator () (const T &a, const T &b) const {
       return a.second < b.second;
     }
@@ -287,7 +287,7 @@ ophac::uint
 ophac::toLinearIdx(const Pair &p, const uint n) {
   const uint i = p.first;
   const uint j = p.second;
-	       
+
   const uint N = n*(n-1)/2;          // Half matrix size
   const uint r = ((n-i)*(n-i-1))/2;  // Half matrix size including and below point
   const uint h = j-i-1;              // Number of cells to the right of the diagonal
@@ -393,4 +393,3 @@ ophac::AL::operator () (const Dists& d, const uint a, const uint b, const uint x
 	       " s1:"<<s1<<" s2:"<<s2<<" --> "<<rs);
   return rs;
 }
-  

@@ -22,7 +22,7 @@ linkage_untied(const ophac::Dists& D0,
 
 void
 ensure_monotone(ophac::Merges& merges) {
-  for(uint i=1; i<merges.size(); ++i) {
+  for(ophac::uint i=1; i<merges.size(); ++i) {
     if(merges[i].first < merges[i-1].first) {
       OPHAC_ASSERT(merges[i-1].first - merges[i].first < 1.0e-12);
       merges[i].first = merges[i-1].first;
