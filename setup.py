@@ -16,16 +16,11 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import setuptools
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
 import os
 import re
 from glob import glob
 from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension, build_ext
-
 
 def get_version():
     version_file = os.path.join("src", "ophac", "_version.py")
@@ -36,23 +31,23 @@ def get_version():
         raise RuntimeError("Unable to find version string in _version.py")
     return match.group(1)
 
-
-__version__ = get_version()
-
+version = get_version()
 
 ext_modules = [
     Pybind11Extension(
-        "ophac_cpp",  # Full path to the module
+        "ophac_cpp",  # Name of the extension module
         sources=sorted(glob("src/cpp/**/*.cpp", recursive=True)),
         include_dirs=["src/cpp"],
         cxx_std=17,
     )
 ]
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
     name='ophac',
-    version=__version__,
+    version=version,  # Use the version variable defined above
     author='Daniel Bakkelund',
     author_email='daniel_bakkelund@hotmail.com',
     description='Order Preserving Hierarchical Agglomerative Clustering',
@@ -62,6 +57,7 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     package_dir={"": "src"},
     ext_modules=ext_modules,
+    cmdclass={"build_ext": build_ext},  # Add this line
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
