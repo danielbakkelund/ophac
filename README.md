@@ -16,8 +16,17 @@ The software in this package is released under the [GNU Lesser General Public Li
 
 ## Installation
 
-```python
+### From PyPI
+```bash
 pip install ophac
+```
+
+### Local installation
+Best done in a local virtual environment:
+```bash
+> python -m venv venv
+> source venv/bin/activate
+> pip install -e .
 ```
 
 ## Source
