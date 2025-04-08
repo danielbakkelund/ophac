@@ -15,7 +15,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-
 [build-system]
 requires = [
     "setuptools>=42",
@@ -23,3 +22,44 @@ requires = [
     "pybind11>=2.6.0"
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "ophac"
+dynamic = ["version"]
+description = "Order Preserving Hierarchical Agglomerative Clustering"
+readme = "README.md"
+authors = [
+    {name = "Daniel Bakkelund", email = "daniel_bakkelund@hotmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Development Status :: 3 - Alpha",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.0"
+dependencies = [
+    "numpy",
+    "scipy"
+]
+
+[project.urls]
+"Homepage" = "https://bitbucket.org/Bakkelund/ophac/src/v04/"
+"Bug Tracker" = "https://bitbucket.org/Bakkelund/ophac/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.cibuildwheel]
+build-verbosity = 1
+skip = ["pp*", "*-musllinux*"]
+test-command = "python -c \"import ophac; print(ophac.__version__)\""
+
+[tool.cibuildwheel.linux]
+before-all = "yum install -y cmake"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+
+[tool.cibuildwheel.windows]
+# Windows-specific config (if needed)
