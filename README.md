@@ -26,7 +26,7 @@ Best done in a local virtual environment:
 ```bash
 > python -m venv venv
 > source venv/bin/activate
-> pip install -e .
+(venv) > pip install -e .
 ```
 
 ## Source
