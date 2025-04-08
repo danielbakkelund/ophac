@@ -82,7 +82,9 @@ jobs:
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'created'
+    if: >
+      (github.event_name == 'release' && github.event.action == 'created') ||
+      github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/download-artifact@v4
         with:
