@@ -55,8 +55,8 @@ build-verbosity = 1
 skip = ["pp*", "*-musllinux*"]
 test-command = "python -c \"import ophac; print(ophac.__version__)\""
 
-[tool.cibuildwheel.linux]
-before-all = "yum install -y cmake"
+# [tool.cibuildwheel.linux]
+# before-all = "yum install -y cmake"
 
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
