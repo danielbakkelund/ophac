@@ -2,7 +2,7 @@
 The code in this project realises the theory described in [this article](https://link.springer.com/article/10.1007/s10994-021-06125-0).</br>
 The functionality provided is that of _**order preserving hierarchical agglomerative clustering of partially ordered sets**_.
 
-The [ophac wiki](https://bitbucket.org/Bakkelund/ophac/wiki/Home) provides examples of how to use the library.
+The [ophac wiki](https://bitbucket.org/Bakkelund/ophac/wiki/Home) provides examples of how to use the library (link to the old repo at bitbucket).
 
 ## Licensing
 
@@ -13,15 +13,13 @@ The software in this package is released under the [GNU Lesser General Public Li
 
 * numpy
 * scipy
-* [ophac-cpp](https://pypi.org/project/ophac-cpp/)
 
 ## Installation
 
 ```python
-python -m pip install ophac [--user]
+pip install ophac
 ```
 
 ## Source
 
-The full source is available from
-<https://bitbucket.org/Bakkelund/ophac/src/v04/>.
+The full source is available from <https://github.com/danielbakkelund/ophac>.
