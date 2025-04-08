@@ -1,26 +1,26 @@
 
 # ophac – Order Preserving Hierarchical Agglomerative Clustering
 
-This library implements the algorithms described in the article  
-[Order-Preserving Hierarchical Clustering](https://link.springer.com/article/10.1007/s10994-021-06125-0).  
+This library implements the algorithms described in the article
+[Order-Preserving Hierarchical Clustering](https://link.springer.com/article/10.1007/s10994-021-06125-0).
 It provides functionality for performing **order-preserving hierarchical agglomerative clustering** on partially ordered sets.
 
-📚 See the [ophac wiki](https://bitbucket.org/Bakkelund/ophac/wiki/Home) for usage examples and additional context (linked from the old Bitbucket repository).
+See the [ophac wiki](https://bitbucket.org/Bakkelund/ophac/wiki/Home) for usage examples and additional context (linked from the old Bitbucket repository).
 
-## 🧾 License
+## License
 
 This project is released under the [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html).
 
-## 📦 Requirements
+## Requirements
 
 `ophac` requires **Python 3.6+** and the following libraries:
 
 - `numpy`
 - `scipy`
 
-## 🚀 Installation
+## Installation
 
-### 🔁 From PyPI (recommended)
+### From PyPI (recommended)
 
 Precompiled wheels are available for common platforms. Just run:
 
@@ -28,7 +28,7 @@ Precompiled wheels are available for common platforms. Just run:
 pip install ophac
 ```
 
-### ⚙️ Local Installation (for development)
+###  Local Installation (for development)
 
 Use a virtual environment to avoid polluting your system Python:
 
@@ -38,7 +38,7 @@ source venv/bin/activate
 pip install -e .
 ```
 
-## 🛠️ Building from Source (for unsupported platforms)
+##  Building from Source (for unsupported platforms)
 
 If you're on a platform without a prebuilt wheel (e.g., unusual Linux distro or Python version), `pip` will try to build `ophac` from source.
 
@@ -67,8 +67,3 @@ git clone https://github.com/danielbakkelund/ophac.git
 cd ophac
 pip install .
 ```
-
-## 🔍 Source Code
-
-The full source is available on GitHub:  
-👉 <https://github.com/danielbakkelund/ophac>
