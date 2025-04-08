@@ -15,3 +15,4 @@ src/ophac.egg-info/
 src/README.md
 ophac.egg-info/
 venv/
+src/*.so
