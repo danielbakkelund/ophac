@@ -1,6 +1,4 @@
 
-![ophac logo](avatar_small.png)
-
 # ophac – Order Preserving Hierarchical Agglomerative Clustering
 
 This library implements the algorithms described in the article  
