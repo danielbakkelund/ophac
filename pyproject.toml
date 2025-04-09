@@ -28,7 +28,7 @@ name = "ophac"
 dynamic = ["version"]
 description = "Order Preserving Hierarchical Agglomerative Clustering"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 authors = [
     { name = "Daniel Bakkelund", email = "daniel_bakkelund@hotmail.com" }
 ]
