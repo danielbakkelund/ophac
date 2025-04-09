@@ -44,12 +44,13 @@ jobs:
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
-          CIBW_SKIP: "pp* *-musllinux* *-win32 *-manylinux_i686"
+          # CIBW_SKIP: "pp* *-musllinux* *-win32 *-manylinux_i686"
+          CIBW_SKIP: "pp* *-musllinux* *-manylinux_i686"
           CIBW_ARCHS_MACOS: "x86_64 arm64"  # Build for Intel and Apple Silicon
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_I686_IMAGE: manylinux2014
           CIBW_BEFORE_BUILD: "pip install cmake"
-          CIBW_TEST_REQUIRES: "numpy scipy"
+          CIBW_BEFORE_TEST: "pip install numpy scipy"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -82,6 +83,7 @@ jobs:
 
 
   upload_pypi:
+    if: false # DISABLED FOR NOW
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: >
