@@ -15,12 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-import setuptools
+from setuptools import setup
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 import os
 import re
 from glob import glob
-from setuptools import setup, find_packages
-from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 def get_version():
     version_file = os.path.join("src", "ophac", "_version.py")
@@ -31,45 +30,17 @@ def get_version():
         raise RuntimeError("Unable to find version string in _version.py")
     return match.group(1)
 
-version = get_version()
-
 ext_modules = [
     Pybind11Extension(
-        "ophac_cpp",  # Name of the extension module
+        "ophac_cpp",
         sources=sorted(glob("src/cpp/**/*.cpp", recursive=True)),
         include_dirs=["src/cpp"],
         cxx_std=17,
     )
 ]
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
-setuptools.setup(
-    name='ophac',
-    version=version,  # Use the version variable defined above
-    author='Daniel Bakkelund',
-    author_email='daniel_bakkelund@hotmail.com',
-    description='Order Preserving Hierarchical Agglomerative Clustering',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    url='https://bitbucket.org/Bakkelund/ophac/src/v04/',
-    packages=setuptools.find_packages(where="src"),
-    package_dir={"": "src"},
+setup(
+    version=get_version(),
     ext_modules=ext_modules,
-    cmdclass={"build_ext": build_ext},  # Add this line
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
-        'Development Status :: 3 - Alpha',
-        'Operating System :: OS Independent',
-    ],
-    python_requires='>=3.6',
-    install_requires=[
-        'numpy',
-    ],
-    extras_require={
-        "plot": ["scipy>=1.10"],
-    },
-    zip_safe=False
+    cmdclass={"build_ext": build_ext},
 )
