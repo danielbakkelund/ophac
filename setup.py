@@ -64,10 +64,12 @@ setuptools.setup(
         'Development Status :: 3 - Alpha',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.0',
+    python_requires='>=3.6',
     install_requires=[
         'numpy',
-        'scipy'
     ],
+    extras_require={
+        "plot": ["scipy>=1.10"],
+    },
     zip_safe=False
 )

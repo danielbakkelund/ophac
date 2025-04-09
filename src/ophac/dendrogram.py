@@ -1,27 +1,28 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Copyright 2020 Daniel Bakkelund
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 '''
 Plotting support for partial dendrograms
+Plotting requires SciPy. Install with `pip install ophac[plot]` or just `pip install scipy`.
 '''
 
 def plot(ac,N,*args,**kwargs):
     '''
-    Plots the (partial) dendrogram using 
+    Plots the (partial) dendrogram using
     scipy.cluster.hierarchy.dendrogram.
     Note: the caller must call matplotlib.pyplot.show()
     after calling this method for the actual window to show up.
@@ -29,7 +30,10 @@ def plot(ac,N,*args,**kwargs):
     N  - The number of elements in the clustering
     args and kwargs : additional parameters passed on to ...show(...)
     '''
-    import scipy.cluster.hierarchy as sch
+    try:
+        import scipy.cluster.hierarchy as sch
+    except ImportError:
+        raise ImportError("Plotting requires SciPy. Install with `pip install ophac[plot]`.")
 
     Z,cutDist = _toLinkageMatrix(ac,N)
 
@@ -39,7 +43,7 @@ def plot(ac,N,*args,**kwargs):
         }
 
     myargs.update(kwargs)
-    
+
     sch.dendrogram(Z=Z, *args, **myargs)
 
 def _toLinkageMatrix(ac,N,eps=1e-12):
@@ -57,12 +61,12 @@ def _toLinkageMatrix(ac,N,eps=1e-12):
 
     L = len(ac)
     Z = np.zeros((N-1,4))
-    
+
     # Mapping from cluster index in agg to cluster sequential index
     idxMap = list(range(N))
 
     # Sequential index of the next cluster to be formed
-    idx = N  
+    idx = N
 
     # Cluster sizes in ac indices
     sizes = [1]*N

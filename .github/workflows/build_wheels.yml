@@ -50,7 +50,6 @@ jobs:
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_I686_IMAGE: manylinux2014
           CIBW_BEFORE_BUILD: "pip install cmake"
-          CIBW_BEFORE_TEST: "pip install numpy scipy"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -86,12 +85,16 @@ jobs:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: >
-      false && ((github.event_name == 'release' && github.event.action == 'created') ||
-      github.event_name == 'workflow_dispatch')
+      (github.event_name == 'release' && github.event.action == 'created') ||
+      github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: artifacts  # ⬅️ Download all artifacts, no name
+          path: artifacts  # Download all artifacts, no name
+
+      # Uncomment this to re-enable pypi upload
+      - name: Fail intentionally
+        run: exit 1
 
       - name: Gather all artifacts into dist/
         run: |
