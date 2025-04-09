@@ -92,9 +92,9 @@ jobs:
         with:
           path: artifacts  # Download all artifacts, no name
 
-      # Uncomment this to re-enable pypi upload
-      - name: Fail intentionally
-        run: exit 1
+      # Uncomment this to disenable pypi upload
+      # - name: Fail intentionally
+      #   run: exit 1
 
       - name: Gather all artifacts into dist/
         run: |
