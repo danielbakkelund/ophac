@@ -1,9 +1,6 @@
 
 # ophac – Order Preserving Hierarchical Agglomerative Clustering
 
-**Version:** 0.5.2
-**Python:** 3.10+
-
 This library implements the algorithms described in the article
 [Order-Preserving Hierarchical Clustering](https://link.springer.com/article/10.1007/s10994-021-06125-0).
 It provides functionality for performing **order-preserving hierarchical agglomerative clustering** on partially ordered sets.
